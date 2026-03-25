@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevOps Academy — From Zero to Production-Ready</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0e17;--bg2:#0f1420;--bg3:#151b2b;
+  --accent:#00e5a0;--accent2:#00b8d4;--accent3:#7c4dff;
+  --warn:#ff6b35;--danger:#ff3d71;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --border:#1e293b;
+  --glow:0 0 40px rgba(0,229,160,0.15);
+  --radius:12px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+
+/* === SCROLLBAR === */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}
+
+/* === NOISE OVERLAY === */
+body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999}
+
+/* === GRID BG === */
+.grid-bg{position:fixed;inset:0;background-image:
+  linear-gradient(rgba(0,229,160,0.03) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(0,229,160,0.03) 1px,transparent 1px);
+  background-size:60px 60px;pointer-events:none;z-index:0}
+
+/* === NAV === */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;
+  background:rgba(10,14,23,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center}
+.nav-logo{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--accent);
+  display:flex;align-items:center;gap:.5rem}
+.nav-logo .prompt{color:var(--text3);font-weight:400}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:.85rem;font-weight:500;letter-spacing:.5px;
+  text-transform:uppercase;transition:color .3s}
+.nav-links a:hover{color:var(--accent)}
+.nav-hamburger{display:none;background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer}
+
+/* === HERO === */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-align:center;padding:8rem 2rem 4rem;position:relative}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem 1rem;
+  background:rgba(0,229,160,0.08);border:1px solid rgba(0,229,160,0.2);border-radius:100px;
+  font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--accent);margin-bottom:2rem;
+  animation:fadeUp .8s ease}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);
+  animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-size:clamp(2.5rem,7vw,5.5rem);font-weight:900;line-height:1.05;margin-bottom:1.5rem;
+  animation:fadeUp .8s ease .1s both}
+.hero h1 .gradient{background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:1.15rem;color:var(--text2);max-width:600px;margin-bottom:2.5rem;
+  animation:fadeUp .8s ease .2s both}
+.hero-cta{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;animation:fadeUp .8s ease .3s both}
+.btn{padding:.85rem 2rem;border-radius:var(--radius);font-family:'Outfit',sans-serif;
+  font-weight:600;font-size:.95rem;text-decoration:none;transition:all .3s;cursor:pointer;border:none}
+.btn-primary{background:var(--accent);color:var(--bg);box-shadow:0 0 30px rgba(0,229,160,0.25)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(0,229,160,0.4)}
+.btn-outline{background:transparent;color:var(--accent);border:1px solid rgba(0,229,160,0.3)}
+.btn-outline:hover{background:rgba(0,229,160,0.08);border-color:var(--accent)}
+.hero-terminal{margin-top:4rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.5rem 2rem;text-align:left;max-width:650px;width:100%;font-family:'JetBrains Mono',monospace;
+  font-size:.85rem;animation:fadeUp .8s ease .4s both;box-shadow:var(--glow)}
+.term-header{display:flex;gap:.4rem;margin-bottom:1rem}
+.term-dot{width:10px;height:10px;border-radius:50%}
+.term-dot.r{background:#ff5f56}.term-dot.y{background:#ffbd2e}.term-dot.g{background:#27c93f}
+.term-line{margin:.3rem 0;color:var(--text2)}
+.term-line .cmd{color:var(--accent)}
+.term-line .path{color:var(--accent2)}
+.term-line .comment{color:var(--text3)}
+.cursor{display:inline-block;width:8px;height:16px;background:var(--accent);
+  animation:blink 1s step-end infinite;vertical-align:middle;margin-left:2px}
+@keyframes blink{50%{opacity:0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+/* === SECTIONS === */
+section{position:relative;z-index:1;padding:6rem 2rem}
+.container{max-width:1200px;margin:0 auto}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--accent);
+  text-transform:uppercase;letter-spacing:2px;margin-bottom:.5rem}
+.section-title{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:1rem}
+.section-subtitle{color:var(--text2);font-size:1.05rem;max-width:600px;margin-bottom:3rem}
+
+/* === STATS BAR === */
+.stats{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:3rem 2rem}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;max-width:1000px;margin:0 auto;text-align:center}
+.stat-num{font-size:2.5rem;font-weight:900;font-family:'JetBrains Mono',monospace;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{color:var(--text3);font-size:.85rem;margin-top:.25rem}
+
+/* === PHASE CARDS === */
+.phases-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1.5rem}
+.phase-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:2rem;transition:all .4s;position:relative;overflow:hidden}
+.phase-card:hover{border-color:rgba(0,229,160,0.3);transform:translateY(-4px);box-shadow:var(--glow)}
+.phase-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0;transition:opacity .4s}
+.phase-card:hover::before{opacity:1}
+.phase-num{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--accent);
+  background:rgba(0,229,160,0.08);padding:.25rem .75rem;border-radius:100px;display:inline-block;margin-bottom:1rem}
+.phase-card h3{font-size:1.25rem;font-weight:700;margin-bottom:.75rem}
+.phase-card p{color:var(--text2);font-size:.9rem;margin-bottom:1rem}
+.phase-tags{display:flex;flex-wrap:wrap;gap:.4rem}
+.phase-tag{font-family:'JetBrains Mono',monospace;font-size:.65rem;padding:.2rem .6rem;
+  background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text3)}
+.phase-days{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text3);margin-bottom:.5rem}
+
+/* === FRAMEWORK === */
+.framework-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem}
+.fw-step{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.5rem;text-align:center;transition:all .3s}
+.fw-step:hover{border-color:var(--accent);transform:translateY(-3px)}
+.fw-icon{font-size:2rem;margin-bottom:.75rem}
+.fw-step h4{font-size:.95rem;font-weight:600;margin-bottom:.25rem}
+.fw-step p{font-size:.75rem;color:var(--text3)}
+
+/* === LEVELS === */
+.levels-track{display:flex;gap:0;align-items:stretch;overflow-x:auto;padding-bottom:1rem}
+.level-node{flex:1;min-width:200px;background:var(--bg2);border:1px solid var(--border);
+  padding:1.5rem;text-align:center;position:relative;transition:all .3s}
+.level-node:first-child{border-radius:var(--radius) 0 0 var(--radius)}
+.level-node:last-child{border-radius:0 var(--radius) var(--radius) 0}
+.level-node:not(:last-child)::after{content:'→';position:absolute;right:-12px;top:50%;
+  transform:translateY(-50%);color:var(--accent);font-size:1.2rem;z-index:2}
+.level-node:hover{background:var(--bg3);border-color:var(--accent)}
+.level-xp{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent);margin-bottom:.5rem}
+.level-emoji{font-size:1.8rem;margin-bottom:.5rem}
+.level-node h4{font-size:.9rem;font-weight:600}
+.level-node p{font-size:.7rem;color:var(--text3);margin-top:.25rem}
+
+/* === BADGES === */
+.badges-grid{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center}
+.badge-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.25rem 1.75rem;text-align:center;transition:all .3s;min-width:160px}
+.badge-item:hover{border-color:var(--accent3);transform:scale(1.05);
+  box-shadow:0 0 30px rgba(124,77,255,0.15)}
+.badge-icon{font-size:2rem;margin-bottom:.5rem}
+.badge-item h4{font-size:.85rem;font-weight:600}
+
+/* === STACK === */
+.stack-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.stack-item{display:flex;align-items:center;gap:1rem;background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:1.25rem 1.5rem;transition:all .3s}
+.stack-item:hover{border-color:var(--accent2);transform:translateX(4px)}
+.stack-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;flex-shrink:0}
+.stack-item h4{font-size:.9rem;font-weight:600}
+.stack-item p{font-size:.75rem;color:var(--text3)}
+
+/* === INCIDENT === */
+.incident-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;
+  margin-top:2rem}
+.incident-box h3{color:var(--danger);font-size:1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.incident-list{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:.75rem}
+.incident-list li{padding:.75rem 1rem;background:var(--bg3);border-radius:8px;font-size:.85rem;
+  border-left:3px solid var(--danger);color:var(--text2);transition:all .3s}
+.incident-list li:hover{border-left-color:var(--warn);background:rgba(255,107,53,0.05)}
+
+/* === RULES === */
+.rules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;margin-top:2rem}
+.rule-card{padding:1.25rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  display:flex;align-items:flex-start;gap:.75rem;transition:all .3s}
+.rule-card:hover{border-color:var(--accent)}
+.rule-icon{font-size:1.2rem;flex-shrink:0;margin-top:.15rem}
+.rule-card h4{font-size:.85rem;font-weight:600;margin-bottom:.15rem}
+.rule-card p{font-size:.75rem;color:var(--text3)}
+
+/* === CTA === */
+.cta-section{text-align:center;padding:8rem 2rem;position:relative}
+.cta-section::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,rgba(0,229,160,0.06),transparent 70%);pointer-events:none}
+.cta-section h2{font-size:clamp(2rem,5vw,3.5rem);font-weight:900;margin-bottom:1rem}
+.cta-section p{color:var(--text2);margin-bottom:2.5rem;font-size:1.1rem}
+
+/* === FOOTER === */
+footer{border-top:1px solid var(--border);padding:2rem;text-align:center;
+  font-size:.8rem;color:var(--text3);font-family:'JetBrains Mono',monospace}
+footer a{color:var(--accent);text-decoration:none}
+
+/* === RESPONSIVE === */
+@media(max-width:768px){
+  .nav-links{display:none}
+  .nav-hamburger{display:block}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .phases-grid{grid-template-columns:1fr}
+  .levels-track{flex-direction:column}
+  .level-node{border-radius:var(--radius)!important}
+  .level-node:not(:last-child)::after{content:'↓';right:50%;top:auto;bottom:-14px;transform:translateX(50%)}
+  .framework-steps{grid-template-columns:repeat(2,1fr)}
+  section{padding:4rem 1.25rem}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr}
+  .framework-steps{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <span>~/devops_academy</span>
+    <span class="prompt">$</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#curriculum">Curriculum</a></li>
+    <li><a href="#framework">Framework</a></li>
+    <li><a href="#levels">Levels</a></li>
+    <li><a href="#stack">Stack</a></li>
+    <li><a href="#incidents">Incidents</a></li>
+    <li><a href="#rules">Rules</a></li>
+  </ul>
+  <button class="nav-hamburger" onclick="document.querySelector('.nav-links').classList.toggle('show')" aria-label="Menu">☰</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge"><span class="dot"></span> Internal Training Program — Enterprise Grade</div>
+  <h1>DevOps <span class="gradient">Academy</span></h1>
+  <p>A structured, hands-on training system that transforms engineers from beginner to production-ready — through real labs, incident simulations, and enterprise best practices.</p>
+  <div class="hero-cta">
+    <a href="#curriculum" class="btn btn-primary">Start Learning →</a>
+    <a href="#framework" class="btn btn-outline">Teaching Method</a>
+  </div>
+  <div class="hero-terminal">
+    <div class="term-header"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span></div>
+    <div class="term-line"><span class="comment"># Clone the automation platform</span></div>
+    <div class="term-line"><span class="cmd">git clone</span> git@gitlab.enterprise.com:infra/<span class="path">automation-platform</span>.git</div>
+    <div class="term-line"><span class="cmd">cd</span> <span class="path">automation-platform</span></div>
+    <div class="term-line"><span class="cmd">tree</span> -L 2</div>
+    <div class="term-line">├── <span class="path">inventories/</span>{dev, stage, prod}</div>
+    <div class="term-line">├── <span class="path">roles/</span>{common, webserver, cleanup}</div>
+    <div class="term-line">├── <span class="path">playbooks/</span>{deploy_app, patching, user_mgmt}.yml</div>
+    <div class="term-line">├── <span class="path">scripts/</span></div>
+    <div class="term-line">├── .gitlab-ci.yml</div>
+    <div class="term-line">└── README.md</div>
+    <div class="term-line"><span class="cmd">$</span> <span class="cursor"></span></div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stats-grid">
+    <div><div class="stat-num">5</div><div class="stat-label">Training Phases</div></div>
+    <div><div class="stat-num">15+</div><div class="stat-label">Days of Content</div></div>
+    <div><div class="stat-num">5</div><div class="stat-label">Skill Levels</div></div>
+    <div><div class="stat-num">6</div><div class="stat-label">Achievement Badges</div></div>
+  </div>
+</div>
+
+<!-- CURRICULUM -->
+<section id="curriculum">
+  <div class="container">
+    <div class="section-label">// curriculum</div>
+    <h2 class="section-title">Training Phases</h2>
+    <p class="section-subtitle">A progressive 15+ day program covering Git, Ansible, CI/CD, enterprise workflows, and advanced incident response.</p>
+    <div class="phases-grid">
+      <div class="phase-card">
+        <span class="phase-num">PHASE 01</span>
+        <div class="phase-days">Days 1–3</div>
+        <h3>Foundations</h3>
+        <p>Git basics — clone, commit, push, pull. Navigate GitLab. Understand the repo structure and how automation lives in code.</p>
+        <div class="phase-tags"><span class="phase-tag">git</span><span class="phase-tag">gitlab</span><span class="phase-tag">repo-structure</span><span class="phase-tag">version-control</span></div>
+      </div>
+      <div class="phase-card">
+        <span class="phase-num">PHASE 02</span>
+        <div class="phase-days">Days 4–7</div>
+        <h3>Ansible Core</h3>
+        <p>YAML syntax, playbooks, roles, inventories, variables, and handlers. Run automation and understand what happens under the hood.</p>
+        <div class="phase-tags"><span class="phase-tag">yaml</span><span class="phase-tag">playbooks</span><span class="phase-tag">roles</span><span class="phase-tag">inventories</span><span class="phase-tag">handlers</span></div>
+      </div>
+      <div class="phase-card">
+        <span class="phase-num">PHASE 03</span>
+        <div class="phase-days">Days 8–10</div>
+        <h3>CI/CD Integration</h3>
+        <p>GitLab CI/CD pipelines — stages, jobs, runners. How GitLab triggers Ansible Controller. Pipeline debugging and optimization.</p>
+        <div class="phase-tags"><span class="phase-tag">.gitlab-ci.yml</span><span class="phase-tag">pipelines</span><span class="phase-tag">runners</span><span class="phase-tag">AWX/AAP</span></div>
+      </div>
+      <div class="phase-card">
+        <span class="phase-num">PHASE 04</span>
+        <div class="phase-days">Days 11–14</div>
+        <h3>Real Workflows</h3>
+        <p>Branching strategies, merge requests, code reviews, and safe production deployment practices. Enterprise-grade discipline.</p>
+        <div class="phase-tags"><span class="phase-tag">branching</span><span class="phase-tag">merge-requests</span><span class="phase-tag">code-review</span><span class="phase-tag">prod-safety</span></div>
+      </div>
+      <div class="phase-card">
+        <span class="phase-num">PHASE 05</span>
+        <div class="phase-days">Day 15+</div>
+        <h3>Advanced & Incidents</h3>
+        <p>Reusable roles, secrets management, performance tuning, and live incident simulations to build production muscle memory.</p>
+        <div class="phase-tags"><span class="phase-tag">vault</span><span class="phase-tag">optimization</span><span class="phase-tag">incident-sim</span><span class="phase-tag">architecture</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEACHING FRAMEWORK -->
+<section id="framework" style="background:var(--bg2)">
+  <div class="container">
+    <div class="section-label">// methodology</div>
+    <h2 class="section-title">Teaching Framework</h2>
+    <p class="section-subtitle">Every single topic follows this mandatory 7-step structure — no shortcuts, no theory-only answers.</p>
+    <div class="framework-steps">
+      <div class="fw-step">
+        <div class="fw-icon">📖</div>
+        <h4>Teach</h4>
+        <p>Simple → Deep with analogy</p>
+      </div>
+      <div class="fw-step">
+        <div class="fw-icon">👁️</div>
+        <h4>Show</h4>
+        <p>Commands, paths, UI steps</p>
+      </div>
+      <div class="fw-step">
+        <div class="fw-icon">🛠️</div>
+        <h4>Do (Lab)</h4>
+        <p>Hands-on real scenario</p>
+      </div>
+      <div class="fw-step">
+        <div class="fw-icon">✅</div>
+        <h4>Verify</h4>
+        <p>Output, logs, observations</p>
+      </div>
+      <div class="fw-step">
+        <div class="fw-icon">🧩</div>
+        <h4>Challenge</h4>
+        <p>Twist or edge case</p>
+      </div>
+      <div class="fw-step">
+        <div class="fw-icon">⚠️</div>
+        <h4>Warn</h4>
+        <p>Mistakes & prod risks</p>
+      </div>
+      <div class="fw-step">
+        <div class="fw-icon">🛑</div>
+        <h4>Stop</h4>
+        <p>Confirm before continuing</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LEVELS -->
+<section id="levels">
+  <div class="container">
+    <div class="section-label">// progression</div>
+    <h2 class="section-title">Skill Levels & Gamification</h2>
+    <p class="section-subtitle">Earn XP through labs and challenges. Track your journey from Explorer to DevOps Pro.</p>
+    <div class="levels-track">
+      <div class="level-node">
+        <div class="level-xp">0 XP</div>
+        <div class="level-emoji">🔭</div>
+        <h4>Level 1 — Explorer</h4>
+        <p>Beginner, no knowledge</p>
+      </div>
+      <div class="level-node">
+        <div class="level-xp">100 XP</div>
+        <div class="level-emoji">🏗️</div>
+        <h4>Level 2 — Builder</h4>
+        <p>Functional with guidance</p>
+      </div>
+      <div class="level-node">
+        <div class="level-xp">300 XP</div>
+        <div class="level-emoji">⚙️</div>
+        <h4>Level 3 — Operator</h4>
+        <p>Independent debug & deliver</p>
+      </div>
+      <div class="level-node">
+        <div class="level-xp">600 XP</div>
+        <div class="level-emoji">🔧</div>
+        <h4>Level 4 — Engineer</h4>
+        <p>Designs solutions</p>
+      </div>
+      <div class="level-node">
+        <div class="level-xp">1000 XP</div>
+        <div class="level-emoji">🚀</div>
+        <h4>Level 5 — DevOps Pro</h4>
+        <p>Production-ready</p>
+      </div>
+    </div>
+
+    <div style="margin-top:3rem">
+      <h3 style="font-size:1.1rem;margin-bottom:1.25rem;color:var(--accent3)">🏅 Achievement Badges</h3>
+      <div class="badges-grid">
+        <div class="badge-item"><div class="badge-icon">🥷</div><h4>Git Ninja</h4></div>
+        <div class="badge-item"><div class="badge-icon">📜</div><h4>YAML Master</h4></div>
+        <div class="badge-item"><div class="badge-icon">🔧</div><h4>Pipeline Debugger</h4></div>
+        <div class="badge-item"><div class="badge-icon">🚨</div><h4>Incident Responder</h4></div>
+        <div class="badge-item"><div class="badge-icon">⚙️</div><h4>Automation Architect</h4></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section id="stack" style="background:var(--bg2)">
+  <div class="container">
+    <div class="section-label">// tooling</div>
+    <h2 class="section-title">Enterprise Stack</h2>
+    <p class="section-subtitle">The real tools used in our production environment.</p>
+    <div class="stack-grid">
+      <div class="stack-item">
+        <div class="stack-icon" style="background:rgba(252,109,38,0.12);color:#fc6d26">⎇</div>
+        <div><h4>GitLab Enterprise</h4><p>Source of truth — repos & CI/CD</p></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon" style="background:rgba(238,0,0,0.1);color:#ee0000">▶</div>
+        <div><h4>Ansible / AWX / AAP</h4><p>Automation controller & execution</p></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon" style="background:rgba(0,184,212,0.1);color:var(--accent2)">📋</div>
+        <div><h4>YAML</h4><p>Playbooks, roles & inventories</p></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon" style="background:rgba(124,77,255,0.1);color:var(--accent3)">🐍</div>
+        <div><h4>Python & Bash</h4><p>Scripts & custom automation</p></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon" style="background:rgba(0,229,160,0.1);color:var(--accent)">🔐</div>
+        <div><h4>Ansible Vault</h4><p>Secrets management</p></div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon" style="background:rgba(255,189,46,0.1);color:#ffbd2e">🏗️</div>
+        <div><h4>CI/CD Pipelines</h4><p>.gitlab-ci.yml stages & jobs</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INCIDENTS -->
+<section id="incidents">
+  <div class="container">
+    <div class="section-label">// battle-tested</div>
+    <h2 class="section-title">Incident Simulation Engine</h2>
+    <p class="section-subtitle">Real failures. Real pressure. Real learning. Simulated incidents build production muscle memory.</p>
+    <div class="incident-box">
+      <h3>🔥 Simulated Scenarios</h3>
+      <ul class="incident-list">
+        <li>Deployment succeeded but application is down — silent failure</li>
+        <li>Wrong inventory file used — accidental production impact</li>
+        <li>Pipeline not triggered after merge — CI/CD misconfig</li>
+        <li>YAML syntax error causing silent playbook skip</li>
+        <li>Secrets exposed in commit history — credential leak</li>
+        <li>Role dependency failure — cascading automation break</li>
+      </ul>
+    </div>
+    <div style="margin-top:2rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:2rem">
+      <h3 style="font-size:1rem;margin-bottom:1rem;color:var(--warn)">📋 Incident Response Flow</h3>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--text2);line-height:2">
+        <span style="color:var(--accent)">1.</span> Show symptoms (alerts / logs / errors)<br>
+        <span style="color:var(--accent)">2.</span> Provide partial clues only<br>
+        <span style="color:var(--accent)">3.</span> Do NOT reveal root cause<br>
+        <span style="color:var(--accent)">4.</span> Engineer investigates independently<br>
+        <span style="color:var(--accent)">5.</span> Guide step-by-step if stuck<br>
+        <span style="color:var(--accent)">6.</span> Reveal root cause & resolution<br>
+        <span style="color:var(--accent)">7.</span> Teach prevention strategy
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RULES -->
+<section id="rules" style="background:var(--bg2)">
+  <div class="container">
+    <div class="section-label">// discipline</div>
+    <h2 class="section-title">Enterprise Rules — Non-Negotiable</h2>
+    <p class="section-subtitle">Production safety is not optional. These rules are enforced at all times.</p>
+    <div class="rules-grid">
+      <div class="rule-card">
+        <div class="rule-icon">🚫</div>
+        <div><h4>Never commit to main</h4><p>Always use feature branches and merge requests</p></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-icon">🔀</div>
+        <div><h4>Always use MRs</h4><p>Every change goes through code review</p></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-icon">✅</div>
+        <div><h4>Validate before deploy</h4><p>Lint, dry-run, and test in stage first</p></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-icon">🏗️</div>
+        <div><h4>Separate environments</h4><p>Dev → Stage → Prod — strictly isolated</p></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-icon">🔐</div>
+        <div><h4>No hardcoded secrets</h4><p>Use Ansible Vault or external secret stores</p></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-icon">📝</div>
+        <div><h4>Maintain audit trail</h4><p>Every action is traceable and logged</p></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-icon">🧪</div>
+        <div><h4>No skipping labs</h4><p>Hands-on execution is mandatory</p></div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-icon">🎯</div>
+        <div><h4>No jumping ahead</h4><p>Master each phase before advancing</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>Ready to become <span style="color:var(--accent)">production-ready</span>?</h2>
+  <p>Start Day 1 — clone the repo, explore the structure, and begin your DevOps journey.</p>
+  <a href="#curriculum" class="btn btn-primary">Begin Phase 1 →</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>DevOps Academy — Built by <a href="https://github.com/abhishekshuklacodes" target="_blank">abhishekshuklacodes</a> · Enterprise Internal Training System</p>
+  <p style="margin-top:.5rem">Git • GitLab • Ansible • CI/CD • Infrastructure as Code</p>
+</footer>
+
+<script>
+// Intersection Observer for fade-in animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.phase-card, .fw-step, .level-node, .stack-item, .rule-card, .badge-item, .incident-box').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  observer.observe(el);
+});
+
+// Mobile nav toggle
+const style = document.createElement('style');
+style.textContent = '.nav-links.show{display:flex!important;position:absolute;top:100%;left:0;right:0;flex-direction:column;background:rgba(10,14,23,0.95);padding:1rem 2rem;border-bottom:1px solid var(--border);gap:1rem}';
+document.head.appendChild(style);
+</script>
+</body>
+</html>
