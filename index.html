@@ -5,554 +5,178 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DevOps Academy — From Zero to Production-Ready</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0a0e17;--bg2:#0f1420;--bg3:#151b2b;
+  --bg:#0a0e17;--bg2:#0f1420;--bg3:#151b2b;--bg4:#1a2035;
   --accent:#00e5a0;--accent2:#00b8d4;--accent3:#7c4dff;
-  --warn:#ff6b35;--danger:#ff3d71;
+  --warn:#ff6b35;--danger:#ff3d71;--success:#00e5a0;
   --text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
-  --border:#1e293b;
-  --glow:0 0 40px rgba(0,229,160,0.15);
-  --radius:12px;
+  --border:#1e293b;--border2:#2a3550;
+  --glow:0 0 40px rgba(0,229,160,0.12);
+  --radius:10px;--sidebar-w:280px;
 }
 html{scroll-behavior:smooth}
 body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
-
-/* === SCROLLBAR === */
-::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar{width:5px}
 ::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}
-
-/* === NOISE OVERLAY === */
-body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999}
-
-/* === GRID BG === */
-.grid-bg{position:fixed;inset:0;background-image:
-  linear-gradient(rgba(0,229,160,0.03) 1px,transparent 1px),
-  linear-gradient(90deg,rgba(0,229,160,0.03) 1px,transparent 1px);
-  background-size:60px 60px;pointer-events:none;z-index:0}
-
-/* === NAV === */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;
-  background:rgba(10,14,23,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);
-  display:flex;justify-content:space-between;align-items:center}
-.nav-logo{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.1rem;color:var(--accent);
-  display:flex;align-items:center;gap:.5rem}
-.nav-logo .prompt{color:var(--text3);font-weight:400}
-.nav-links{display:flex;gap:2rem;list-style:none}
-.nav-links a{color:var(--text2);text-decoration:none;font-size:.85rem;font-weight:500;letter-spacing:.5px;
-  text-transform:uppercase;transition:color .3s}
-.nav-links a:hover{color:var(--accent)}
-.nav-hamburger{display:none;background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer}
-
-/* === HERO === */
-.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;
-  text-align:center;padding:8rem 2rem 4rem;position:relative}
-.hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem 1rem;
-  background:rgba(0,229,160,0.08);border:1px solid rgba(0,229,160,0.2);border-radius:100px;
-  font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--accent);margin-bottom:2rem;
-  animation:fadeUp .8s ease}
-.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);
-  animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.hero h1{font-size:clamp(2.5rem,7vw,5.5rem);font-weight:900;line-height:1.05;margin-bottom:1.5rem;
-  animation:fadeUp .8s ease .1s both}
-.hero h1 .gradient{background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero p{font-size:1.15rem;color:var(--text2);max-width:600px;margin-bottom:2.5rem;
-  animation:fadeUp .8s ease .2s both}
-.hero-cta{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;animation:fadeUp .8s ease .3s both}
-.btn{padding:.85rem 2rem;border-radius:var(--radius);font-family:'Outfit',sans-serif;
-  font-weight:600;font-size:.95rem;text-decoration:none;transition:all .3s;cursor:pointer;border:none}
-.btn-primary{background:var(--accent);color:var(--bg);box-shadow:0 0 30px rgba(0,229,160,0.25)}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(0,229,160,0.4)}
-.btn-outline{background:transparent;color:var(--accent);border:1px solid rgba(0,229,160,0.3)}
-.btn-outline:hover{background:rgba(0,229,160,0.08);border-color:var(--accent)}
-.hero-terminal{margin-top:4rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
-  padding:1.5rem 2rem;text-align:left;max-width:650px;width:100%;font-family:'JetBrains Mono',monospace;
-  font-size:.85rem;animation:fadeUp .8s ease .4s both;box-shadow:var(--glow)}
-.term-header{display:flex;gap:.4rem;margin-bottom:1rem}
-.term-dot{width:10px;height:10px;border-radius:50%}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,160,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,160,0.02) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+.topnav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;background:rgba(10,14,23,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:1rem}
+.topnav-logo{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.95rem;color:var(--accent);display:flex;align-items:center;gap:.5rem;white-space:nowrap}
+.topnav-logo .dim{color:var(--text3);font-weight:400}
+.topnav-hamburger{display:none;background:none;border:none;color:var(--text);font-size:1.3rem;cursor:pointer;padding:4px}
+.topnav-right{margin-left:auto;display:flex;align-items:center;gap:1rem}
+.topnav-right a{color:var(--text3);text-decoration:none;font-size:.78rem;font-weight:500;letter-spacing:.5px;text-transform:uppercase;transition:color .3s}
+.topnav-right a:hover{color:var(--accent)}
+.sidebar{position:fixed;top:56px;left:0;bottom:0;width:var(--sidebar-w);background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;z-index:100;padding:1rem 0;transition:transform .3s}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar-phase-title{display:flex;align-items:center;gap:.5rem;padding:.55rem 1.25rem;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);cursor:pointer;transition:all .2s;border-left:3px solid transparent}
+.sidebar-phase-title:hover{color:var(--text2);background:rgba(255,255,255,0.02)}
+.sidebar-phase-title .arrow{margin-left:auto;transition:transform .3s;font-size:.55rem}
+.sidebar-phase-title.expanded .arrow{transform:rotate(90deg)}
+.sidebar-lessons{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.sidebar-lessons.open{max-height:800px}
+.sidebar-lesson{display:flex;align-items:center;gap:.5rem;padding:.45rem 1.25rem .45rem 1.75rem;font-size:.8rem;color:var(--text3);cursor:pointer;transition:all .2s;border-left:3px solid transparent;text-decoration:none}
+.sidebar-lesson:hover{color:var(--text);background:rgba(255,255,255,0.02)}
+.sidebar-lesson.active{color:var(--accent);border-left-color:var(--accent);background:rgba(0,229,160,0.04)}
+.sidebar-lesson .dot{width:7px;height:7px;border-radius:50%;border:1.5px solid var(--text3);flex-shrink:0}
+.sidebar-lesson.active .dot{background:var(--accent);border-color:var(--accent)}
+.main{margin-left:var(--sidebar-w);margin-top:56px;min-height:calc(100vh - 56px);position:relative;z-index:1}
+.lesson-page{display:none;padding:2.5rem 3rem 4rem;max-width:920px}
+.lesson-page.active{display:block}
+.lesson-header{margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.lesson-phase-tag{font-family:'JetBrains Mono',monospace;font-size:.63rem;color:var(--accent);background:rgba(0,229,160,0.08);padding:.2rem .6rem;border-radius:100px;display:inline-block;margin-bottom:.5rem}
+.lesson-title{font-size:1.7rem;font-weight:800;margin-bottom:.4rem}
+.lesson-subtitle{color:var(--text2);font-size:.92rem}
+.block-wrap{margin:1.5rem 0;border-radius:var(--radius);overflow:hidden}
+.block-header{display:flex;align-items:center;gap:.6rem;padding:.7rem 1.15rem;font-weight:600;font-size:.84rem;cursor:pointer;transition:background .2s;user-select:none}
+.block-header .chevron{margin-left:auto;transition:transform .3s;font-size:.65rem;color:var(--text3)}
+.block-header.expanded .chevron{transform:rotate(90deg)}
+.block-body{max-height:0;overflow:hidden;transition:max-height .5s ease}
+.block-body.open{max-height:15000px}
+.block-content{padding:1.15rem 1.4rem}
+.teach-block{border:1px solid rgba(0,229,160,0.15);background:rgba(0,229,160,0.02)}
+.teach-block .block-header{background:rgba(0,229,160,0.06);color:var(--accent)}
+.show-block{border:1px solid rgba(0,184,212,0.15);background:rgba(0,184,212,0.02)}
+.show-block .block-header{background:rgba(0,184,212,0.06);color:var(--accent2)}
+.lab-block{border:1px solid rgba(124,77,255,0.2);background:rgba(124,77,255,0.02)}
+.lab-block .block-header{background:rgba(124,77,255,0.08);color:var(--accent3)}
+.verify-block{border:1px solid rgba(0,229,160,0.15);background:rgba(0,229,160,0.02)}
+.verify-block .block-header{background:rgba(0,229,160,0.06);color:var(--accent)}
+.challenge-block{border:1px solid rgba(255,107,53,0.2);background:rgba(255,107,53,0.02)}
+.challenge-block .block-header{background:rgba(255,107,53,0.08);color:var(--warn)}
+.warn-block{border:1px solid rgba(255,61,113,0.2);background:rgba(255,61,113,0.02)}
+.warn-block .block-header{background:rgba(255,61,113,0.08);color:var(--danger)}
+.block-content h4{font-size:.92rem;font-weight:700;margin:1rem 0 .4rem;color:var(--text)}
+.block-content h4:first-child{margin-top:0}
+.block-content p{font-size:.86rem;color:var(--text2);margin-bottom:.65rem}
+.block-content ul,.block-content ol{padding-left:1.25rem;margin-bottom:.65rem}
+.block-content li{font-size:.84rem;color:var(--text2);margin-bottom:.3rem}
+.block-content code{font-family:'JetBrains Mono',monospace;font-size:.76rem;background:var(--bg3);padding:.12rem .35rem;border-radius:4px;color:var(--accent2)}
+.block-content strong{color:var(--text);font-weight:600}
+.block-content a{color:var(--accent)}
+.block-content .analogy{background:var(--bg3);border-left:3px solid var(--accent);padding:.65rem .9rem;border-radius:0 8px 8px 0;margin:.7rem 0;font-size:.83rem;color:var(--text2)}
+.block-content .analogy::before{content:'💡 ';font-weight:600}
+.block-content .docker-req{background:rgba(124,77,255,0.06);border:1px solid rgba(124,77,255,0.15);padding:.65rem .9rem;border-radius:var(--radius);margin:.7rem 0;font-size:.8rem}
+.block-content .docker-req::before{content:'🐳 Docker: ';font-weight:600;color:var(--accent3)}
+.block-content .objective{background:rgba(0,229,160,0.06);border:1px solid rgba(0,229,160,0.12);padding:.65rem .9rem;border-radius:var(--radius);margin-bottom:.9rem;font-size:.83rem}
+.block-content .objective::before{content:'🎯 ';font-weight:600}
+.block-content .expected-output{background:rgba(0,229,160,0.04);border:1px solid rgba(0,229,160,0.1);padding:.65rem .9rem;border-radius:var(--radius);margin:.7rem 0;font-size:.82rem}
+.block-content .expected-output::before{content:'✅ Expected: ';font-weight:600;color:var(--accent);display:block;margin-bottom:.2rem}
+.block-content .failure-case{background:rgba(255,61,113,0.04);border:1px solid rgba(255,61,113,0.12);padding:.65rem .9rem;border-radius:var(--radius);margin:.7rem 0;font-size:.82rem}
+.block-content .failure-case::before{content:'❌ Failure: ';font-weight:600;color:var(--danger);display:block;margin-bottom:.2rem}
+.block-content .reflection{background:var(--bg3);border:1px solid var(--border);padding:.65rem .9rem;border-radius:var(--radius);margin:.7rem 0;font-size:.82rem}
+.block-content .reflection::before{content:'🧠 Reflect: ';font-weight:600;color:var(--accent2);display:block;margin-bottom:.2rem}
+.block-content details{margin:.7rem 0}
+.block-content summary{cursor:pointer;color:var(--accent);font-size:.85rem;font-weight:600}
+.block-content details>div{padding:.65rem;background:var(--bg3);border-radius:8px;margin-top:.4rem;font-size:.83rem}
+.terminal{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:.7rem 0;font-family:'JetBrains Mono',monospace;font-size:.78rem}
+.term-bar{display:flex;align-items:center;gap:.3rem;padding:.5rem .9rem;background:var(--bg2);border-bottom:1px solid var(--border)}
+.term-dot{width:8px;height:8px;border-radius:50%}
 .term-dot.r{background:#ff5f56}.term-dot.y{background:#ffbd2e}.term-dot.g{background:#27c93f}
-.term-line{margin:.3rem 0;color:var(--text2)}
-.term-line .cmd{color:var(--accent)}
-.term-line .path{color:var(--accent2)}
-.term-line .comment{color:var(--text3)}
-.cursor{display:inline-block;width:8px;height:16px;background:var(--accent);
-  animation:blink 1s step-end infinite;vertical-align:middle;margin-left:2px}
-@keyframes blink{50%{opacity:0}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-
-/* === SECTIONS === */
-section{position:relative;z-index:1;padding:6rem 2rem}
-.container{max-width:1200px;margin:0 auto}
-.section-label{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--accent);
-  text-transform:uppercase;letter-spacing:2px;margin-bottom:.5rem}
-.section-title{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:1rem}
-.section-subtitle{color:var(--text2);font-size:1.05rem;max-width:600px;margin-bottom:3rem}
-
-/* === STATS BAR === */
-.stats{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:3rem 2rem}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;max-width:1000px;margin:0 auto;text-align:center}
-.stat-num{font-size:2.5rem;font-weight:900;font-family:'JetBrains Mono',monospace;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.stat-label{color:var(--text3);font-size:.85rem;margin-top:.25rem}
-
-/* === PHASE CARDS === */
-.phases-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1.5rem}
-.phase-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
-  padding:2rem;transition:all .4s;position:relative;overflow:hidden}
-.phase-card:hover{border-color:rgba(0,229,160,0.3);transform:translateY(-4px);box-shadow:var(--glow)}
-.phase-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0;transition:opacity .4s}
-.phase-card:hover::before{opacity:1}
-.phase-num{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--accent);
-  background:rgba(0,229,160,0.08);padding:.25rem .75rem;border-radius:100px;display:inline-block;margin-bottom:1rem}
-.phase-card h3{font-size:1.25rem;font-weight:700;margin-bottom:.75rem}
-.phase-card p{color:var(--text2);font-size:.9rem;margin-bottom:1rem}
-.phase-tags{display:flex;flex-wrap:wrap;gap:.4rem}
-.phase-tag{font-family:'JetBrains Mono',monospace;font-size:.65rem;padding:.2rem .6rem;
-  background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text3)}
-.phase-days{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text3);margin-bottom:.5rem}
-
-/* === FRAMEWORK === */
-.framework-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem}
-.fw-step{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
-  padding:1.5rem;text-align:center;transition:all .3s}
-.fw-step:hover{border-color:var(--accent);transform:translateY(-3px)}
-.fw-icon{font-size:2rem;margin-bottom:.75rem}
-.fw-step h4{font-size:.95rem;font-weight:600;margin-bottom:.25rem}
-.fw-step p{font-size:.75rem;color:var(--text3)}
-
-/* === LEVELS === */
-.levels-track{display:flex;gap:0;align-items:stretch;overflow-x:auto;padding-bottom:1rem}
-.level-node{flex:1;min-width:200px;background:var(--bg2);border:1px solid var(--border);
-  padding:1.5rem;text-align:center;position:relative;transition:all .3s}
-.level-node:first-child{border-radius:var(--radius) 0 0 var(--radius)}
-.level-node:last-child{border-radius:0 var(--radius) var(--radius) 0}
-.level-node:not(:last-child)::after{content:'→';position:absolute;right:-12px;top:50%;
-  transform:translateY(-50%);color:var(--accent);font-size:1.2rem;z-index:2}
-.level-node:hover{background:var(--bg3);border-color:var(--accent)}
-.level-xp{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--accent);margin-bottom:.5rem}
-.level-emoji{font-size:1.8rem;margin-bottom:.5rem}
-.level-node h4{font-size:.9rem;font-weight:600}
-.level-node p{font-size:.7rem;color:var(--text3);margin-top:.25rem}
-
-/* === BADGES === */
-.badges-grid{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center}
-.badge-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
-  padding:1.25rem 1.75rem;text-align:center;transition:all .3s;min-width:160px}
-.badge-item:hover{border-color:var(--accent3);transform:scale(1.05);
-  box-shadow:0 0 30px rgba(124,77,255,0.15)}
-.badge-icon{font-size:2rem;margin-bottom:.5rem}
-.badge-item h4{font-size:.85rem;font-weight:600}
-
-/* === STACK === */
-.stack-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
-.stack-item{display:flex;align-items:center;gap:1rem;background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--radius);padding:1.25rem 1.5rem;transition:all .3s}
-.stack-item:hover{border-color:var(--accent2);transform:translateX(4px)}
-.stack-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;
-  font-size:1.2rem;flex-shrink:0}
-.stack-item h4{font-size:.9rem;font-weight:600}
-.stack-item p{font-size:.75rem;color:var(--text3)}
-
-/* === INCIDENT === */
-.incident-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;
-  margin-top:2rem}
-.incident-box h3{color:var(--danger);font-size:1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
-.incident-list{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:.75rem}
-.incident-list li{padding:.75rem 1rem;background:var(--bg3);border-radius:8px;font-size:.85rem;
-  border-left:3px solid var(--danger);color:var(--text2);transition:all .3s}
-.incident-list li:hover{border-left-color:var(--warn);background:rgba(255,107,53,0.05)}
-
-/* === RULES === */
-.rules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;margin-top:2rem}
-.rule-card{padding:1.25rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
-  display:flex;align-items:flex-start;gap:.75rem;transition:all .3s}
-.rule-card:hover{border-color:var(--accent)}
-.rule-icon{font-size:1.2rem;flex-shrink:0;margin-top:.15rem}
-.rule-card h4{font-size:.85rem;font-weight:600;margin-bottom:.15rem}
-.rule-card p{font-size:.75rem;color:var(--text3)}
-
-/* === CTA === */
-.cta-section{text-align:center;padding:8rem 2rem;position:relative}
-.cta-section::before{content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at center,rgba(0,229,160,0.06),transparent 70%);pointer-events:none}
-.cta-section h2{font-size:clamp(2rem,5vw,3.5rem);font-weight:900;margin-bottom:1rem}
-.cta-section p{color:var(--text2);margin-bottom:2.5rem;font-size:1.1rem}
-
-/* === FOOTER === */
-footer{border-top:1px solid var(--border);padding:2rem;text-align:center;
-  font-size:.8rem;color:var(--text3);font-family:'JetBrains Mono',monospace}
+.term-title{margin-left:.6rem;font-size:.65rem;color:var(--text3)}
+.term-body{padding:.9rem 1.1rem;overflow-x:auto;line-height:1.85;color:var(--text2);white-space:pre-wrap;word-break:break-word}
+.term-body .cmd{color:var(--accent)}.term-body .path{color:var(--accent2)}.term-body .str{color:#ffd866}
+.term-body .comment{color:var(--text3);font-style:italic}.term-body .flag{color:var(--accent3)}
+.term-body .out{color:var(--text3)}.term-body .err{color:var(--danger)}.term-body .ok{color:var(--success)}
+.yaml-display{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem 1.1rem;font-family:'JetBrains Mono',monospace;font-size:.76rem;line-height:1.85;overflow-x:auto;white-space:pre-wrap;margin:.7rem 0}
+.yaml-display .key{color:var(--accent2)}.yaml-display .val{color:#ffd866}.yaml-display .comment{color:var(--text3);font-style:italic}
+.file-tree{font-family:'JetBrains Mono',monospace;font-size:.76rem;line-height:2;color:var(--text2);background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem 1.1rem;white-space:pre-wrap;margin:.7rem 0}
+.file-tree .dir{color:var(--accent2)}.file-tree .file{color:var(--text3)}.file-tree .imp{color:var(--accent)}
+.lesson-nav{display:flex;justify-content:space-between;margin-top:2.5rem;padding-top:1.25rem;border-top:1px solid var(--border)}
+.lesson-nav-btn{display:flex;align-items:center;gap:.35rem;padding:.5rem 1.1rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text2);font-size:.8rem;cursor:pointer;transition:all .3s;text-decoration:none;font-family:'Outfit',sans-serif}
+.lesson-nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+.hero{min-height:80vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:3rem 2rem;position:relative}
+.hero-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .8rem;background:rgba(0,229,160,0.06);border:1px solid rgba(0,229,160,0.15);border-radius:100px;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--accent);margin-bottom:1.5rem;animation:fadeUp .8s ease}
+.hero-badge .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-size:clamp(2rem,5.5vw,4rem);font-weight:900;line-height:1.1;margin-bottom:1rem;animation:fadeUp .8s ease .1s both}
+.hero h1 .gr{background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:1rem;color:var(--text2);max-width:560px;margin-bottom:1.75rem;animation:fadeUp .8s ease .2s both}
+.hero-cta{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;animation:fadeUp .8s ease .3s both}
+.btn{padding:.65rem 1.5rem;border-radius:var(--radius);font-family:'Outfit',sans-serif;font-weight:600;font-size:.87rem;text-decoration:none;transition:all .3s;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:.35rem}
+.btn-primary{background:var(--accent);color:var(--bg)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 35px rgba(0,229,160,0.3)}
+.btn-outline{background:transparent;color:var(--accent);border:1px solid rgba(0,229,160,0.25)}
+.btn-outline:hover{background:rgba(0,229,160,0.06)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.overview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.9rem;margin-top:2.5rem;max-width:860px;width:100%}
+.overview-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;text-align:left;transition:all .3s}
+.overview-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.overview-card .oc-icon{font-size:1.4rem;margin-bottom:.4rem}
+.overview-card h4{font-size:.83rem;font-weight:600;margin-bottom:.2rem}
+.overview-card p{font-size:.72rem;color:var(--text3)}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99}
+.sidebar-overlay.show{display:block}
+footer{border-top:1px solid var(--border);padding:1.5rem 2rem;text-align:center;font-size:.75rem;color:var(--text3);font-family:'JetBrains Mono',monospace}
 footer a{color:var(--accent);text-decoration:none}
-
-/* === RESPONSIVE === */
-@media(max-width:768px){
-  .nav-links{display:none}
-  .nav-hamburger{display:block}
-  .stats-grid{grid-template-columns:repeat(2,1fr)}
-  .phases-grid{grid-template-columns:1fr}
-  .levels-track{flex-direction:column}
-  .level-node{border-radius:var(--radius)!important}
-  .level-node:not(:last-child)::after{content:'↓';right:50%;top:auto;bottom:-14px;transform:translateX(50%)}
-  .framework-steps{grid-template-columns:repeat(2,1fr)}
-  section{padding:4rem 1.25rem}
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .topnav-hamburger{display:block}
+  .lesson-page{padding:1.75rem 1.15rem 3rem}
 }
-@media(max-width:480px){
-  .stats-grid{grid-template-columns:1fr}
-  .framework-steps{grid-template-columns:1fr}
-}
+@media(max-width:480px){.overview-grid{grid-template-columns:1fr}.hero h1{font-size:1.8rem}}
 </style>
 </head>
 <body>
-
 <div class="grid-bg"></div>
-
-<!-- NAV -->
-<nav>
-  <div class="nav-logo">
-    <span>~/devops_academy</span>
-    <span class="prompt">$</span>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<nav class="topnav">
+  <button class="topnav-hamburger" id="menuBtn" aria-label="Menu">☰</button>
+  <div class="topnav-logo"><span>~/devops_academy</span><span class="dim">$</span></div>
+  <div class="topnav-right">
+    <a href="https://github.com/abhishekshuklacodes/devops_academy" target="_blank">GitHub</a>
   </div>
-  <ul class="nav-links">
-    <li><a href="#curriculum">Curriculum</a></li>
-    <li><a href="#framework">Framework</a></li>
-    <li><a href="#levels">Levels</a></li>
-    <li><a href="#stack">Stack</a></li>
-    <li><a href="#incidents">Incidents</a></li>
-    <li><a href="#rules">Rules</a></li>
-  </ul>
-  <button class="nav-hamburger" onclick="document.querySelector('.nav-links').classList.toggle('show')" aria-label="Menu">☰</button>
 </nav>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-badge"><span class="dot"></span> Internal Training Program — Enterprise Grade</div>
-  <h1>DevOps <span class="gradient">Academy</span></h1>
-  <p>A structured, hands-on training system that transforms engineers from beginner to production-ready — through real labs, incident simulations, and enterprise best practices.</p>
-  <div class="hero-cta">
-    <a href="#curriculum" class="btn btn-primary">Start Learning →</a>
-    <a href="#framework" class="btn btn-outline">Teaching Method</a>
-  </div>
-  <div class="hero-terminal">
-    <div class="term-header"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span></div>
-    <div class="term-line"><span class="comment"># Clone the automation platform</span></div>
-    <div class="term-line"><span class="cmd">git clone</span> git@gitlab.enterprise.com:infra/<span class="path">automation-platform</span>.git</div>
-    <div class="term-line"><span class="cmd">cd</span> <span class="path">automation-platform</span></div>
-    <div class="term-line"><span class="cmd">tree</span> -L 2</div>
-    <div class="term-line">├── <span class="path">inventories/</span>{dev, stage, prod}</div>
-    <div class="term-line">├── <span class="path">roles/</span>{common, webserver, cleanup}</div>
-    <div class="term-line">├── <span class="path">playbooks/</span>{deploy_app, patching, user_mgmt}.yml</div>
-    <div class="term-line">├── <span class="path">scripts/</span></div>
-    <div class="term-line">├── .gitlab-ci.yml</div>
-    <div class="term-line">└── README.md</div>
-    <div class="term-line"><span class="cmd">$</span> <span class="cursor"></span></div>
-  </div>
-</section>
-
-<!-- STATS -->
-<div class="stats">
-  <div class="stats-grid">
-    <div><div class="stat-num">5</div><div class="stat-label">Training Phases</div></div>
-    <div><div class="stat-num">15+</div><div class="stat-label">Days of Content</div></div>
-    <div><div class="stat-num">5</div><div class="stat-label">Skill Levels</div></div>
-    <div><div class="stat-num">6</div><div class="stat-label">Achievement Badges</div></div>
-  </div>
-</div>
-
-<!-- CURRICULUM -->
-<section id="curriculum">
-  <div class="container">
-    <div class="section-label">// curriculum</div>
-    <h2 class="section-title">Training Phases</h2>
-    <p class="section-subtitle">A progressive 15+ day program covering Git, Ansible, CI/CD, enterprise workflows, and advanced incident response.</p>
-    <div class="phases-grid">
-      <div class="phase-card">
-        <span class="phase-num">PHASE 01</span>
-        <div class="phase-days">Days 1–3</div>
-        <h3>Foundations</h3>
-        <p>Git basics — clone, commit, push, pull. Navigate GitLab. Understand the repo structure and how automation lives in code.</p>
-        <div class="phase-tags"><span class="phase-tag">git</span><span class="phase-tag">gitlab</span><span class="phase-tag">repo-structure</span><span class="phase-tag">version-control</span></div>
-      </div>
-      <div class="phase-card">
-        <span class="phase-num">PHASE 02</span>
-        <div class="phase-days">Days 4–7</div>
-        <h3>Ansible Core</h3>
-        <p>YAML syntax, playbooks, roles, inventories, variables, and handlers. Run automation and understand what happens under the hood.</p>
-        <div class="phase-tags"><span class="phase-tag">yaml</span><span class="phase-tag">playbooks</span><span class="phase-tag">roles</span><span class="phase-tag">inventories</span><span class="phase-tag">handlers</span></div>
-      </div>
-      <div class="phase-card">
-        <span class="phase-num">PHASE 03</span>
-        <div class="phase-days">Days 8–10</div>
-        <h3>CI/CD Integration</h3>
-        <p>GitLab CI/CD pipelines — stages, jobs, runners. How GitLab triggers Ansible Controller. Pipeline debugging and optimization.</p>
-        <div class="phase-tags"><span class="phase-tag">.gitlab-ci.yml</span><span class="phase-tag">pipelines</span><span class="phase-tag">runners</span><span class="phase-tag">AWX/AAP</span></div>
-      </div>
-      <div class="phase-card">
-        <span class="phase-num">PHASE 04</span>
-        <div class="phase-days">Days 11–14</div>
-        <h3>Real Workflows</h3>
-        <p>Branching strategies, merge requests, code reviews, and safe production deployment practices. Enterprise-grade discipline.</p>
-        <div class="phase-tags"><span class="phase-tag">branching</span><span class="phase-tag">merge-requests</span><span class="phase-tag">code-review</span><span class="phase-tag">prod-safety</span></div>
-      </div>
-      <div class="phase-card">
-        <span class="phase-num">PHASE 05</span>
-        <div class="phase-days">Day 15+</div>
-        <h3>Advanced & Incidents</h3>
-        <p>Reusable roles, secrets management, performance tuning, and live incident simulations to build production muscle memory.</p>
-        <div class="phase-tags"><span class="phase-tag">vault</span><span class="phase-tag">optimization</span><span class="phase-tag">incident-sim</span><span class="phase-tag">architecture</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- TEACHING FRAMEWORK -->
-<section id="framework" style="background:var(--bg2)">
-  <div class="container">
-    <div class="section-label">// methodology</div>
-    <h2 class="section-title">Teaching Framework</h2>
-    <p class="section-subtitle">Every single topic follows this mandatory 7-step structure — no shortcuts, no theory-only answers.</p>
-    <div class="framework-steps">
-      <div class="fw-step">
-        <div class="fw-icon">📖</div>
-        <h4>Teach</h4>
-        <p>Simple → Deep with analogy</p>
-      </div>
-      <div class="fw-step">
-        <div class="fw-icon">👁️</div>
-        <h4>Show</h4>
-        <p>Commands, paths, UI steps</p>
-      </div>
-      <div class="fw-step">
-        <div class="fw-icon">🛠️</div>
-        <h4>Do (Lab)</h4>
-        <p>Hands-on real scenario</p>
-      </div>
-      <div class="fw-step">
-        <div class="fw-icon">✅</div>
-        <h4>Verify</h4>
-        <p>Output, logs, observations</p>
-      </div>
-      <div class="fw-step">
-        <div class="fw-icon">🧩</div>
-        <h4>Challenge</h4>
-        <p>Twist or edge case</p>
-      </div>
-      <div class="fw-step">
-        <div class="fw-icon">⚠️</div>
-        <h4>Warn</h4>
-        <p>Mistakes & prod risks</p>
-      </div>
-      <div class="fw-step">
-        <div class="fw-icon">🛑</div>
-        <h4>Stop</h4>
-        <p>Confirm before continuing</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- LEVELS -->
-<section id="levels">
-  <div class="container">
-    <div class="section-label">// progression</div>
-    <h2 class="section-title">Skill Levels & Gamification</h2>
-    <p class="section-subtitle">Earn XP through labs and challenges. Track your journey from Explorer to DevOps Pro.</p>
-    <div class="levels-track">
-      <div class="level-node">
-        <div class="level-xp">0 XP</div>
-        <div class="level-emoji">🔭</div>
-        <h4>Level 1 — Explorer</h4>
-        <p>Beginner, no knowledge</p>
-      </div>
-      <div class="level-node">
-        <div class="level-xp">100 XP</div>
-        <div class="level-emoji">🏗️</div>
-        <h4>Level 2 — Builder</h4>
-        <p>Functional with guidance</p>
-      </div>
-      <div class="level-node">
-        <div class="level-xp">300 XP</div>
-        <div class="level-emoji">⚙️</div>
-        <h4>Level 3 — Operator</h4>
-        <p>Independent debug & deliver</p>
-      </div>
-      <div class="level-node">
-        <div class="level-xp">600 XP</div>
-        <div class="level-emoji">🔧</div>
-        <h4>Level 4 — Engineer</h4>
-        <p>Designs solutions</p>
-      </div>
-      <div class="level-node">
-        <div class="level-xp">1000 XP</div>
-        <div class="level-emoji">🚀</div>
-        <h4>Level 5 — DevOps Pro</h4>
-        <p>Production-ready</p>
-      </div>
-    </div>
-
-    <div style="margin-top:3rem">
-      <h3 style="font-size:1.1rem;margin-bottom:1.25rem;color:var(--accent3)">🏅 Achievement Badges</h3>
-      <div class="badges-grid">
-        <div class="badge-item"><div class="badge-icon">🥷</div><h4>Git Ninja</h4></div>
-        <div class="badge-item"><div class="badge-icon">📜</div><h4>YAML Master</h4></div>
-        <div class="badge-item"><div class="badge-icon">🔧</div><h4>Pipeline Debugger</h4></div>
-        <div class="badge-item"><div class="badge-icon">🚨</div><h4>Incident Responder</h4></div>
-        <div class="badge-item"><div class="badge-icon">⚙️</div><h4>Automation Architect</h4></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- TECH STACK -->
-<section id="stack" style="background:var(--bg2)">
-  <div class="container">
-    <div class="section-label">// tooling</div>
-    <h2 class="section-title">Enterprise Stack</h2>
-    <p class="section-subtitle">The real tools used in our production environment.</p>
-    <div class="stack-grid">
-      <div class="stack-item">
-        <div class="stack-icon" style="background:rgba(252,109,38,0.12);color:#fc6d26">⎇</div>
-        <div><h4>GitLab Enterprise</h4><p>Source of truth — repos & CI/CD</p></div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-icon" style="background:rgba(238,0,0,0.1);color:#ee0000">▶</div>
-        <div><h4>Ansible / AWX / AAP</h4><p>Automation controller & execution</p></div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-icon" style="background:rgba(0,184,212,0.1);color:var(--accent2)">📋</div>
-        <div><h4>YAML</h4><p>Playbooks, roles & inventories</p></div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-icon" style="background:rgba(124,77,255,0.1);color:var(--accent3)">🐍</div>
-        <div><h4>Python & Bash</h4><p>Scripts & custom automation</p></div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-icon" style="background:rgba(0,229,160,0.1);color:var(--accent)">🔐</div>
-        <div><h4>Ansible Vault</h4><p>Secrets management</p></div>
-      </div>
-      <div class="stack-item">
-        <div class="stack-icon" style="background:rgba(255,189,46,0.1);color:#ffbd2e">🏗️</div>
-        <div><h4>CI/CD Pipelines</h4><p>.gitlab-ci.yml stages & jobs</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- INCIDENTS -->
-<section id="incidents">
-  <div class="container">
-    <div class="section-label">// battle-tested</div>
-    <h2 class="section-title">Incident Simulation Engine</h2>
-    <p class="section-subtitle">Real failures. Real pressure. Real learning. Simulated incidents build production muscle memory.</p>
-    <div class="incident-box">
-      <h3>🔥 Simulated Scenarios</h3>
-      <ul class="incident-list">
-        <li>Deployment succeeded but application is down — silent failure</li>
-        <li>Wrong inventory file used — accidental production impact</li>
-        <li>Pipeline not triggered after merge — CI/CD misconfig</li>
-        <li>YAML syntax error causing silent playbook skip</li>
-        <li>Secrets exposed in commit history — credential leak</li>
-        <li>Role dependency failure — cascading automation break</li>
-      </ul>
-    </div>
-    <div style="margin-top:2rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:2rem">
-      <h3 style="font-size:1rem;margin-bottom:1rem;color:var(--warn)">📋 Incident Response Flow</h3>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--text2);line-height:2">
-        <span style="color:var(--accent)">1.</span> Show symptoms (alerts / logs / errors)<br>
-        <span style="color:var(--accent)">2.</span> Provide partial clues only<br>
-        <span style="color:var(--accent)">3.</span> Do NOT reveal root cause<br>
-        <span style="color:var(--accent)">4.</span> Engineer investigates independently<br>
-        <span style="color:var(--accent)">5.</span> Guide step-by-step if stuck<br>
-        <span style="color:var(--accent)">6.</span> Reveal root cause & resolution<br>
-        <span style="color:var(--accent)">7.</span> Teach prevention strategy
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- RULES -->
-<section id="rules" style="background:var(--bg2)">
-  <div class="container">
-    <div class="section-label">// discipline</div>
-    <h2 class="section-title">Enterprise Rules — Non-Negotiable</h2>
-    <p class="section-subtitle">Production safety is not optional. These rules are enforced at all times.</p>
-    <div class="rules-grid">
-      <div class="rule-card">
-        <div class="rule-icon">🚫</div>
-        <div><h4>Never commit to main</h4><p>Always use feature branches and merge requests</p></div>
-      </div>
-      <div class="rule-card">
-        <div class="rule-icon">🔀</div>
-        <div><h4>Always use MRs</h4><p>Every change goes through code review</p></div>
-      </div>
-      <div class="rule-card">
-        <div class="rule-icon">✅</div>
-        <div><h4>Validate before deploy</h4><p>Lint, dry-run, and test in stage first</p></div>
-      </div>
-      <div class="rule-card">
-        <div class="rule-icon">🏗️</div>
-        <div><h4>Separate environments</h4><p>Dev → Stage → Prod — strictly isolated</p></div>
-      </div>
-      <div class="rule-card">
-        <div class="rule-icon">🔐</div>
-        <div><h4>No hardcoded secrets</h4><p>Use Ansible Vault or external secret stores</p></div>
-      </div>
-      <div class="rule-card">
-        <div class="rule-icon">📝</div>
-        <div><h4>Maintain audit trail</h4><p>Every action is traceable and logged</p></div>
-      </div>
-      <div class="rule-card">
-        <div class="rule-icon">🧪</div>
-        <div><h4>No skipping labs</h4><p>Hands-on execution is mandatory</p></div>
-      </div>
-      <div class="rule-card">
-        <div class="rule-icon">🎯</div>
-        <div><h4>No jumping ahead</h4><p>Master each phase before advancing</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="cta-section">
-  <h2>Ready to become <span style="color:var(--accent)">production-ready</span>?</h2>
-  <p>Start Day 1 — clone the repo, explore the structure, and begin your DevOps journey.</p>
-  <a href="#curriculum" class="btn btn-primary">Begin Phase 1 →</a>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <p>DevOps Academy — Built by <a href="https://github.com/abhishekshuklacodes" target="_blank">abhishekshuklacodes</a> · Enterprise Internal Training System</p>
-  <p style="margin-top:.5rem">Git • GitLab • Ansible • CI/CD • Infrastructure as Code</p>
-</footer>
-
+<aside class="sidebar" id="sidebar"></aside>
+<div class="main" id="mainContent"></div>
 <script>
-// Intersection Observer for fade-in animations
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.style.opacity = '1';
-      e.target.style.transform = 'translateY(0)';
-    }
-  });
-}, { threshold: 0.1 });
+const C=[{phase:"Phase 1 — Foundations",n:1,lessons:[{id:"d1",day:"Day 1",title:"What is Git & Why GitLab?",sub:"Version control fundamentals and enterprise Git workflow",teach:`<h4>What is Git?</h4><p>Git is a <strong>distributed version control system</strong> (DVCS). It tracks every change to files — who changed it, when, and why. Every engineer has a full copy of the entire history.</p><div class="analogy">Git is like a detailed journal for your code. Every entry (commit) records what changed and why. You can flip to any page (version) or create a parallel storyline (branch) without affecting the main story.</div><h4>Why Git in Enterprise?</h4><p>In our environment, infrastructure is managed as <strong>code</strong> — Ansible playbooks, inventories, CI/CD configs all live in Git. This means:</p><ul><li><strong>Audit trail</strong> — every change is traceable (GxP compliance)</li><li><strong>Collaboration</strong> — multiple engineers work simultaneously</li><li><strong>Rollback</strong> — revert to any previous known-good state instantly</li><li><strong>Review</strong> — Merge Requests before anything hits production</li></ul><h4>Why GitLab Enterprise?</h4><p>GitLab provides Git hosting PLUS built-in CI/CD, container registry, and tight integration with Ansible Controller (AWX/AAP). It's the <strong>single source of truth</strong>.</p><h4>How Git + Ansible + CI/CD Connect</h4><ol><li>Engineer writes an Ansible playbook on a <strong>feature branch</strong></li><li>Creates a <strong>Merge Request</strong> → team reviews → approves</li><li>Merge triggers <strong>.gitlab-ci.yml</strong> pipeline</li><li>Pipeline calls <strong>Ansible Controller (AWX)</strong> via API</li><li>AWX executes the playbook against target <strong>inventory</strong></li></ol>`,show:`<h4>Key Git Concepts</h4><div class="file-tree">Working Directory → <span class="dir">git add</span> → Staging Area → <span class="dir">git commit</span> → Local Repo → <span class="dir">git push</span> → Remote (GitLab)</div><h4>Essential Commands</h4><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">git-basics.sh</span></div><div class="term-body"><span class="comment"># Configure identity</span>\n<span class="cmd">git config</span> <span class="flag">--global</span> user.name <span class="str">"Your Name"</span>\n<span class="cmd">git config</span> <span class="flag">--global</span> user.email <span class="str">"you@company.com"</span>\n\n<span class="comment"># Clone a repo</span>\n<span class="cmd">git clone</span> git@gitlab.company.com:infra/automation-platform.git\n\n<span class="comment"># Check status, stage, commit, push</span>\n<span class="cmd">git status</span>\n<span class="cmd">git add</span> playbooks/deploy_app.yml\n<span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"fix: update deploy timeout to 120s"</span>\n<span class="cmd">git push</span> origin feature/update-deploy-timeout\n\n<span class="comment"># Pull latest</span>\n<span class="cmd">git pull</span> origin main</div></div>`,lab:`<div class="objective">Clone the automation platform repo inside a Docker container, explore the directory structure, and make your first commit.</div><div class="docker-req">Ensure Docker is installed. If not, complete the <strong>Docker Setup</strong> page first.</div><h4>Step 1: Launch Lab Container</h4><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">terminal</span></div><div class="term-body"><span class="cmd">docker run</span> <span class="flag">-it --name</span> git-lab <span class="flag">--rm</span> alpine:latest <span class="cmd">sh</span>\n<span class="cmd">apk add</span> <span class="flag">--no-cache</span> git tree</div></div><h4>Step 2: Create Enterprise Repo Structure</h4><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">terminal</span></div><div class="term-body"><span class="cmd">mkdir</span> /automation-platform && <span class="cmd">cd</span> /automation-platform\n<span class="cmd">git init</span>\n\n<span class="comment"># Create full directory structure</span>\n<span class="cmd">mkdir -p</span> inventories/{dev,stage,prod}\n<span class="cmd">mkdir -p</span> group_vars\n<span class="cmd">mkdir -p</span> roles/{common,webserver,cleanup}/{tasks,handlers,templates,files,defaults}\n<span class="cmd">mkdir -p</span> playbooks scripts\n\n<span class="comment"># Create key files</span>\n<span class="cmd">touch</span> playbooks/deploy_app.yml playbooks/patching.yml playbooks/user_management.yml\n<span class="cmd">touch</span> .gitlab-ci.yml README.md\n<span class="cmd">touch</span> inventories/dev/hosts inventories/stage/hosts inventories/prod/hosts\n<span class="cmd">touch</span> group_vars/all.yml roles/common/tasks/main.yml\n\n<span class="cmd">tree</span> <span class="flag">-a</span> /automation-platform</div></div><h4>Step 3: First Commit</h4><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">terminal</span></div><div class="term-body"><span class="cmd">git config</span> user.name <span class="str">"Lab User"</span>\n<span class="cmd">git config</span> user.email <span class="str">"lab@devops.academy"</span>\n\n<span class="cmd">git add</span> <span class="flag">-A</span>\n<span class="cmd">git status</span>\n<span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"init: scaffold automation-platform repo"</span>\n<span class="cmd">git log</span> <span class="flag">--oneline</span></div></div><div class="expected-output"><code>tree</code> shows the full directory structure. <code>git log --oneline</code> shows one commit.</div><div class="failure-case">If <code>git commit</code> says "nothing to commit" — you forgot <code>git add -A</code> or all directories are empty (Git doesn't track empty dirs). The <code>touch</code> commands fix this.</div><div class="reflection">Why does each role have subdirectories like tasks/, handlers/, templates/? What purpose does separating inventories serve?</div>`,verify:`<ol><li><code>git log --oneline</code> — see your commit?</li><li><code>tree -L 2</code> — identify each directory's purpose?</li><li><code>git status</code> — "nothing to commit, working tree clean"?</li></ol>`,challenge:`<h4>Challenge: Add a New Role</h4><p>Add a role called <code>monitoring</code> with proper structure. Stage ONLY the monitoring role (not everything). Commit with message <code>feat: add monitoring role scaffold</code>. Verify with <code>git log --oneline</code> — should show 2 commits.</p>`,warn:`<ul><li><strong>git add .</strong> stages EVERYTHING — always be specific in enterprise</li><li><strong>Never commit to main directly</strong> — always use branches</li><li><strong>Vague commit messages</strong> — use conventional commits: feat:, fix:, chore:</li><li><strong>Never commit secrets</strong> — once in Git history, they're there forever</li></ul>`},{id:"d2",day:"Day 2",title:"Branching, Merging & Conflicts",sub:"Enterprise branching strategies and safe collaboration",teach:`<h4>Why Branches?</h4><p>A branch is a <strong>parallel timeline</strong>. The <code>main</code> branch represents production. All work happens on separate branches, merged back only after review.</p><div class="analogy">Think of a highway (main). You never stop traffic to build a new exit ramp. You build it separately (feature branch), test it, then connect it when it's ready.</div><h4>Enterprise Branch Naming</h4><ul><li><code>main</code> — production-ready, protected</li><li><code>feature/*</code> — new capabilities</li><li><code>bugfix/*</code> — fixing existing issues</li><li><code>hotfix/*</code> — urgent production fixes</li></ul><h4>Merge Request Workflow</h4><ol><li>Create branch → make changes → push</li><li>Open MR in GitLab targeting <code>main</code></li><li>Reviewer approves or requests changes</li><li>CI/CD pipeline runs automatically</li><li>Merge when green + approved</li></ol>`,show:`<h4>Branch Commands</h4><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">branching.sh</span></div><div class="term-body"><span class="cmd">git checkout</span> <span class="flag">-b</span> feature/add-monitoring\n<span class="cmd">git branch</span> <span class="flag">-a</span>       <span class="comment"># list all branches</span>\n<span class="cmd">git checkout</span> main    <span class="comment"># switch branches</span>\n<span class="cmd">git merge</span> feature/add-monitoring\n<span class="cmd">git branch</span> <span class="flag">-d</span> feature/add-monitoring  <span class="comment"># delete after merge</span>\n<span class="cmd">git log</span> <span class="flag">--oneline --graph --all</span></div></div><h4>Conflict Markers</h4><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">conflict</span></div><div class="term-body"><span class="out">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span>\n<span class="out">timeout: 120</span>\n<span class="out">=======</span>\n<span class="out">timeout: 30</span>\n<span class="out">&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/update-timeout</span>\n\n<span class="comment"># Fix manually, then:</span>\n<span class="cmd">git add</span> file.yml\n<span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"merge: resolve timeout conflict"</span></div></div>`,lab:`<div class="objective">Practice branching, create a merge conflict, and resolve it inside Docker.</div><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">terminal</span></div><div class="term-body"><span class="cmd">docker run</span> <span class="flag">-it --name</span> branch-lab <span class="flag">--rm</span> alpine:latest <span class="cmd">sh</span>\n<span class="cmd">apk add</span> <span class="flag">--no-cache</span> git\n<span class="cmd">mkdir</span> /repo && <span class="cmd">cd</span> /repo && <span class="cmd">git init</span>\n<span class="cmd">git config</span> user.name <span class="str">"Lab User"</span> && <span class="cmd">git config</span> user.email <span class="str">"lab@devops.academy"</span>\n\n<span class="comment"># Create initial file on main</span>\n<span class="cmd">cat</span> > deploy.yml << 'EOF'\n---\n- name: Deploy App\n  hosts: webservers\n  vars:\n    timeout: 60\n    retries: 3\n  tasks:\n    - name: Pull code\n      git:\n        repo: "https://gitlab.com/app.git"\n        dest: /opt/app\nEOF\n<span class="cmd">git add</span> . && <span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"init: add deploy playbook"</span>\n\n<span class="comment"># Branch A: increase timeout</span>\n<span class="cmd">git checkout</span> <span class="flag">-b</span> feature/increase-timeout\n<span class="cmd">sed -i</span> <span class="str">'s/timeout: 60/timeout: 120/'</span> deploy.yml\n<span class="cmd">git add</span> . && <span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"feat: increase timeout to 120s"</span>\n\n<span class="comment"># Branch B: decrease timeout (conflict!)</span>\n<span class="cmd">git checkout</span> main\n<span class="cmd">git checkout</span> <span class="flag">-b</span> bugfix/reduce-timeout\n<span class="cmd">sed -i</span> <span class="str">'s/timeout: 60/timeout: 30/'</span> deploy.yml\n<span class="cmd">git add</span> . && <span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"fix: reduce timeout to 30s"</span>\n\n<span class="comment"># Merge both into main</span>\n<span class="cmd">git checkout</span> main\n<span class="cmd">git merge</span> feature/increase-timeout  <span class="comment"># clean</span>\n<span class="cmd">git merge</span> bugfix/reduce-timeout      <span class="comment"># CONFLICT!</span>\n\n<span class="comment"># Resolve: keep 120</span>\n<span class="cmd">sed -i</span> <span class="str">'/<<<<<<</span>  <span class="comment"># remove conflict markers</span>\n<span class="cmd">sed -i</span> <span class="str">'/======/,/>>>>>>>/d'</span> deploy.yml\n<span class="cmd">git add</span> . && <span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"merge: resolve conflict, keep 120s"</span>\n\n<span class="cmd">git log</span> <span class="flag">--oneline --graph --all</span></div></div><div class="expected-output">Git log graph shows 3 branches merging into main with all commits visible.</div>`,verify:`<ol><li>Git graph shows branch/merge history?</li><li><code>cat deploy.yml</code> — timeout is 120, no conflict markers?</li></ol>`,challenge:`<h4>Challenge: Three-Way Conflict</h4><p>Create THREE branches modifying <code>retries</code> to different values. Merge all three, resolving each conflict.</p>`,warn:`<ul><li><strong>Never force push shared branches</strong> — destroys team history</li><li><strong>Conflict markers in deployed files</strong> — that's a production incident</li><li><strong>Always pull before pushing</strong></li></ul>`},{id:"d3",day:"Day 3",title:"GitLab Navigation & Repo Deep-Dive",sub:"Master the GitLab UI and understand every file in the repo",teach:`<h4>GitLab — The Control Center</h4><ul><li><strong>Repository</strong> — browse files, branches, commit history</li><li><strong>Merge Requests</strong> — code review and approval</li><li><strong>CI/CD → Pipelines</strong> — view pipeline runs</li><li><strong>Settings → Repository</strong> — branch protection rules</li></ul><h4>Repo Structure Deep-Dive</h4><ul><li><code>inventories/</code> — WHICH servers to target</li><li><code>group_vars/</code> — variables for host groups</li><li><code>roles/</code> — reusable automation building blocks</li><li><code>playbooks/</code> — orchestration files</li><li><code>scripts/</code> — standalone utilities</li><li><code>.gitlab-ci.yml</code> — CI/CD pipeline definition</li></ul><div class="analogy">The repo is like a restaurant kitchen. Inventories are order tickets (which table). Roles are recipes. Playbooks are meal prep workflows. .gitlab-ci.yml is the head chef coordinating everything.</div>`,show:`<h4>Sample Inventory</h4><div class="yaml-display"><span class="comment"># inventories/dev/hosts</span>\n[webservers]\ndev-web-01 <span class="key">ansible_host</span>=<span class="val">10.0.1.10</span>\ndev-web-02 <span class="key">ansible_host</span>=<span class="val">10.0.1.11</span>\n\n[dbservers]\ndev-db-01 <span class="key">ansible_host</span>=<span class="val">10.0.2.10</span>\n\n[all:vars]\n<span class="key">ansible_user</span>=<span class="val">deploy</span></div><h4>Role Structure</h4><div class="file-tree">roles/webserver/\n├── <span class="dir">tasks/</span>\n│   └── <span class="imp">main.yml</span>         ← entry point\n├── <span class="dir">handlers/</span>\n│   └── <span class="file">main.yml</span>         ← triggered actions\n├── <span class="dir">templates/</span>\n│   └── <span class="file">nginx.conf.j2</span>    ← Jinja2 templates\n├── <span class="dir">files/</span>               ← static files\n└── <span class="dir">defaults/</span>\n    └── <span class="file">main.yml</span>         ← default variables</div>`,lab:`<div class="objective">Create a fully populated repo with realistic content and practice navigating history.</div><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">terminal</span></div><div class="term-body"><span class="cmd">docker run</span> <span class="flag">-it --name</span> repo-lab <span class="flag">--rm</span> alpine:latest <span class="cmd">sh</span>\n<span class="cmd">apk add</span> <span class="flag">--no-cache</span> git tree\n<span class="cmd">mkdir</span> /auto && <span class="cmd">cd</span> /auto && <span class="cmd">git init</span>\n<span class="cmd">git config</span> user.name <span class="str">"Lab"</span> && <span class="cmd">git config</span> user.email <span class="str">"l@d.a"</span>\n\n<span class="cmd">mkdir -p</span> inventories/{dev,stage,prod} group_vars roles/{common,webserver}/{tasks,handlers,templates,defaults} playbooks scripts\n\n<span class="cmd">cat</span> > inventories/prod/hosts << 'EOF'\n[webservers]\nprod-web-01 ansible_host=172.16.1.10\nprod-web-02 ansible_host=172.16.1.11\nprod-web-03 ansible_host=172.16.1.12\n[all:vars]\nenv=production\nEOF\n\n<span class="cmd">cat</span> > roles/webserver/tasks/main.yml << 'EOF'\n---\n- name: Install nginx\n  apt: name=nginx state=present\n  notify: restart nginx\n- name: Deploy config\n  template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf\n  notify: restart nginx\nEOF\n\n<span class="cmd">cat</span> > .gitlab-ci.yml << 'EOF'\nstages: [lint, test, deploy]\nyaml-lint:\n  stage: lint\n  script: yamllint playbooks/ roles/\ndeploy-dev:\n  stage: deploy\n  script: ansible-playbook -i inventories/dev/hosts playbooks/deploy_app.yml\n  only: [main]\nEOF\n\n<span class="cmd">git add</span> <span class="flag">-A</span> && <span class="cmd">git commit</span> <span class="flag">-m</span> <span class="str">"init: full repo scaffold"</span>\n<span class="cmd">tree</span> <span class="flag">-L 3</span>\n<span class="cmd">git log</span> <span class="flag">--stat</span></div></div><div class="reflection">Compare dev vs prod inventories — why does prod have more servers?</div>`,verify:`<ol><li>Can you explain each top-level directory?</li><li>What is the difference between tasks/ and handlers/ in a role?</li><li>In .gitlab-ci.yml, why does deploy-dev have <code>only: [main]</code>?</li></ol>`,challenge:`<h4>Challenge</h4><p>Create stage inventory, group_vars/all.yml with ntp_server + dns_servers, and patching.yml playbook. Commit each separately. Verify 4 total commits.</p>`,warn:`<ul><li><strong>Production inventory must be protected</strong> — accidental <code>-i prod/hosts</code> can take down servers</li><li><strong>.gitlab-ci.yml errors break everything</strong> — validate YAML before pushing</li></ul>`}]},{phase:"Phase 2 — Ansible Core",n:2,lessons:[{id:"d4",day:"Day 4",title:"YAML Fundamentals & First Playbook",sub:"Master the language of automation and run your first Ansible tasks",teach:`<h4>YAML Rules</h4><ul><li><strong>2 spaces</strong> for indentation (never tabs)</li><li><strong>key: value</strong> pairs</li><li><strong>- item</strong> for lists (dash + space)</li><li><strong>#</strong> for comments</li><li><strong>---</strong> document start</li></ul><h4>Ansible Core Concepts</h4><ul><li><strong>Inventory</strong> — which servers</li><li><strong>Playbook</strong> — what to do (YAML)</li><li><strong>Task</strong> — single action</li><li><strong>Module</strong> — the tool (apt, copy, service, template)</li><li><strong>Role</strong> — reusable collection</li><li><strong>Handler</strong> — runs only when notified</li></ul><div class="analogy">Ansible is like giving a recipe (playbook) to a chef (module) with a list of restaurants to cook at (inventory). The chef follows the recipe step by step without needing to be installed at each restaurant first (agentless).</div>`,show:`<h4>Playbook Anatomy</h4><div class="yaml-display"><span class="comment"># playbooks/deploy_app.yml</span>\n---\n- <span class="key">name</span>: <span class="val">Deploy Application</span>\n  <span class="key">hosts</span>: <span class="val">webservers</span>\n  <span class="key">become</span>: <span class="val">yes</span>\n  <span class="key">vars</span>:\n    <span class="key">app_port</span>: <span class="val">8080</span>\n  <span class="key">tasks</span>:\n    - <span class="key">name</span>: <span class="val">Install nginx</span>\n      <span class="key">apt</span>:\n        <span class="key">name</span>: nginx\n        <span class="key">state</span>: present\n    - <span class="key">name</span>: <span class="val">Verify deployment</span>\n      <span class="key">uri</span>:\n        <span class="key">url</span>: <span class="val">"http://localhost:{{ app_port }}"</span>\n        <span class="key">status_code</span>: <span class="val">200</span></div>`,lab:`<div class="objective">Set up a multi-container Ansible lab with Docker Compose and run your first playbook.</div><h4>Step 1: Create docker-compose.yml</h4><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">host machine</span></div><div class="term-body"><span class="cmd">mkdir</span> ansible-lab && <span class="cmd">cd</span> ansible-lab\n\n<span class="cmd">cat</span> > docker-compose.yml << 'COMPOSE'\nversion: '3.8'\nservices:\n  controller:\n    image: python:3.11-slim\n    container_name: ansible-controller\n    hostname: controller\n    command: sleep infinity\n    volumes:\n      - ./workspace:/workspace\n    networks: [lab]\n  node1:\n    image: python:3.11-slim\n    container_name: managed-node1\n    hostname: node1\n    command: bash -c "apt-get update && apt-get install -y openssh-server && mkdir -p /run/sshd && echo 'root:labpass123' | chpasswd && echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config && /usr/sbin/sshd -D"\n    networks: [lab]\n  node2:\n    image: python:3.11-slim\n    container_name: managed-node2\n    hostname: node2\n    command: bash -c "apt-get update && apt-get install -y openssh-server && mkdir -p /run/sshd && echo 'root:labpass123' | chpasswd && echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config && /usr/sbin/sshd -D"\n    networks: [lab]\nnetworks:\n  lab:\n    driver: bridge\nCOMPOSE\n\n<span class="cmd">mkdir -p</span> workspace\n<span class="cmd">docker-compose up</span> <span class="flag">-d</span></div></div><h4>Step 2: Set Up Controller</h4><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">terminal</span></div><div class="term-body"><span class="cmd">docker exec</span> <span class="flag">-it</span> ansible-controller <span class="cmd">bash</span>\n<span class="cmd">pip install</span> ansible\n<span class="cmd">apt-get update</span> && <span class="cmd">apt-get install</span> <span class="flag">-y</span> sshpass\n<span class="cmd">ansible</span> <span class="flag">--version</span></div></div><h4>Step 3: Create Inventory & First Playbook</h4><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">controller</span></div><div class="term-body"><span class="cmd">cd</span> /workspace\n\n<span class="cmd">cat</span> > inventory.ini << 'EOF'\n[webservers]\nnode1 ansible_host=node1\nnode2 ansible_host=node2\n[all:vars]\nansible_user=root\nansible_password=labpass123\nansible_ssh_common_args='-o StrictHostKeyChecking=no'\nEOF\n\n<span class="comment"># Test connectivity</span>\n<span class="cmd">ansible</span> all <span class="flag">-i</span> inventory.ini <span class="flag">-m</span> ping\n\n<span class="cmd">cat</span> > first_playbook.yml << 'EOF'\n---\n- name: My First Playbook\n  hosts: webservers\n  tasks:\n    - name: Print hostname\n      debug:\n        msg: "Hello from {{ ansible_hostname }}!"\n    - name: Create a file\n      copy:\n        content: "Deployed by Ansible\\n"\n        dest: /tmp/ansible_was_here.txt\n    - name: Verify file\n      stat:\n        path: /tmp/ansible_was_here.txt\n      register: f\n    - name: Report\n      debug:\n        msg: "File exists: {{ f.stat.exists }}"\nEOF\n\n<span class="cmd">ansible-playbook</span> <span class="flag">-i</span> inventory.ini first_playbook.yml</div></div><div class="expected-output">All tasks show <strong>ok</strong> or <strong>changed</strong>. Both nodes report "Hello from node1/node2!". File exists = True.</div><div class="failure-case">If ping fails with "unreachable" — SSH server on nodes may not be ready. Wait 10s and retry.</div><div class="reflection">Run the playbook twice. Why does the second run show <code>ok</code> instead of <code>changed</code>? This is <strong>idempotency</strong>.</div>`,verify:`<ol><li>Ping returns SUCCESS for both nodes?</li><li>All playbook tasks pass?</li><li>Second run shows ok (not changed)?</li></ol>`,challenge:`<h4>Challenge</h4><p>Add tasks to: install <code>curl</code>, create <code>/opt/myapp</code> directory, copy a config file there. Re-run and verify.</p>`,warn:`<ul><li><strong>YAML indentation</strong> — #1 cause of Ansible failures</li><li><strong>become: yes</strong> runs as root — only when needed</li><li><strong>Password in inventory</strong> — lab only! Use SSH keys + Vault in prod</li></ul>`},{id:"d5",day:"Day 5",title:"Roles, Variables & Templates",sub:"Build reusable automation with Ansible roles and Jinja2 templates",teach:`<h4>Why Roles?</h4><p>Roles break complex automation into <strong>reusable components</strong>. Instead of a 500-line playbook, create small, focused roles that combine.</p><div class="analogy">A role is like a LEGO brick. Each brick does one thing well. Combine bricks to build anything.</div><h4>Role Loading Convention</h4><ul><li><code>tasks/main.yml</code> — the work (required)</li><li><code>handlers/main.yml</code> — triggered actions</li><li><code>templates/*.j2</code> — Jinja2 config templates</li><li><code>defaults/main.yml</code> — default variables (lowest priority)</li><li><code>meta/main.yml</code> — dependencies</li></ul><h4>Variable Precedence (low → high)</h4><ol><li>Role defaults</li><li>Inventory vars (group_vars)</li><li>Playbook vars</li><li>Extra vars (<code>-e</code>) — highest</li></ol>`,show:`<div class="yaml-display"><span class="comment"># roles/webserver/defaults/main.yml</span>\n<span class="key">http_port</span>: <span class="val">80</span>\n<span class="key">server_name</span>: <span class="val">localhost</span>\n\n<span class="comment"># roles/webserver/tasks/main.yml</span>\n- <span class="key">name</span>: Deploy nginx config\n  <span class="key">template</span>:\n    <span class="key">src</span>: nginx.conf.j2\n    <span class="key">dest</span>: /etc/nginx/sites-available/default\n  <span class="key">notify</span>: restart nginx\n\n<span class="comment"># roles/webserver/templates/nginx.conf.j2</span>\nserver {\n    listen <span class="val">{{ http_port }}</span>;\n    server_name <span class="val">{{ server_name }}</span>;\n}\n\n<span class="comment"># roles/webserver/handlers/main.yml</span>\n- <span class="key">name</span>: restart nginx\n  <span class="key">service</span>: name=nginx state=restarted</div>`,lab:`<div class="objective">Create a complete role, use templates with variables, and deploy it.</div><div class="docker-req">Docker lab from Day 4 should be running.</div><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">controller</span></div><div class="term-body"><span class="cmd">docker exec</span> <span class="flag">-it</span> ansible-controller <span class="cmd">bash</span>\n<span class="cmd">cd</span> /workspace\n\n<span class="cmd">mkdir -p</span> roles/motd/{defaults,tasks,templates}\n\n<span class="cmd">cat</span> > roles/motd/defaults/main.yml << 'EOF'\n---\ncompany_name: "DevOps Academy"\nenvironment: "development"\nadmin_email: "ops@company.com"\nEOF\n\n<span class="cmd">cat</span> > roles/motd/templates/motd.j2 << 'EOF'\n================================\n  Welcome to {{ company_name }}\n  Host: {{ ansible_hostname }}\n  Env: {{ environment }}\n  Contact: {{ admin_email }}\n  Deployed: {{ ansible_date_time.iso8601 }}\n================================\nWARNING: Unauthorized access prohibited.\nEOF\n\n<span class="cmd">cat</span> > roles/motd/tasks/main.yml << 'EOF'\n---\n- name: Deploy MOTD\n  template:\n    src: motd.j2\n    dest: /etc/motd\n    mode: '0644'\n- name: Verify\n  command: cat /etc/motd\n  register: motd\n  changed_when: false\n- name: Show MOTD\n  debug: var=motd.stdout_lines\nEOF\n\n<span class="cmd">cat</span> > deploy_motd.yml << 'EOF'\n---\n- name: Deploy MOTD\n  hosts: webservers\n  become: yes\n  roles:\n    - motd\nEOF\n\n<span class="comment"># Run with defaults</span>\n<span class="cmd">ansible-playbook</span> <span class="flag">-i</span> inventory.ini deploy_motd.yml\n\n<span class="comment"># Override at runtime</span>\n<span class="cmd">ansible-playbook</span> <span class="flag">-i</span> inventory.ini deploy_motd.yml <span class="flag">-e</span> <span class="str">"environment=production company_name='Amgen Ops'"</span></div></div><div class="expected-output">MOTD displays on both nodes with hostname, env, timestamp. Overriding with -e changes the values.</div>`,verify:`<ol><li><code>docker exec managed-node1 cat /etc/motd</code> — banner present?</li><li>Running twice = all ok (idempotent)?</li><li>Override with -e changes output?</li></ol>`,challenge:`<h4>Challenge</h4><p>Create a <code>security_baseline</code> role with: user creation, sshd_config template (disable root login), handler to restart sshd, and configurable defaults.</p>`,warn:`<ul><li><strong>Template errors crash playbooks</strong> — test with --check first</li><li><strong>Handlers run at end of play</strong> — not immediately. Use <code>meta: flush_handlers</code> if needed</li></ul>`},{id:"d6",day:"Day 6",title:"Conditionals, Loops & Error Handling",sub:"Write intelligent playbooks for real-world complexity",teach:`<h4>Conditionals: when</h4><p>Run tasks only when conditions are met — multi-OS support, environment-specific behavior.</p><h4>Loops: loop</h4><p>Iterate over lists instead of duplicating tasks.</p><h4>Error Handling</h4><ul><li><code>ignore_errors</code> — continue on failure</li><li><code>block/rescue/always</code> — try/catch/finally for Ansible</li><li><code>register</code> — capture output for later use</li><li><code>failed_when</code> — custom failure conditions</li></ul><div class="analogy"><code>block/rescue/always</code> is like a fire drill. Block = normal ops. Rescue = emergency procedure (only if block fails). Always = post-drill report no matter what.</div>`,show:`<div class="yaml-display"><span class="comment"># Conditional</span>\n- <span class="key">name</span>: Debian only\n  <span class="key">apt</span>: name=nginx\n  <span class="key">when</span>: <span class="val">ansible_os_family == "Debian"</span>\n\n<span class="comment"># Loop</span>\n- <span class="key">name</span>: Install packages\n  <span class="key">apt</span>: name="{{ item }}" state=present\n  <span class="key">loop</span>: [nginx, curl, vim, htop]\n\n<span class="comment"># Block/Rescue/Always</span>\n- <span class="key">block</span>:\n    - <span class="key">name</span>: Deploy\n      <span class="key">command</span>: /opt/deploy.sh\n  <span class="key">rescue</span>:\n    - <span class="key">name</span>: Rollback\n      <span class="key">command</span>: /opt/rollback.sh\n  <span class="key">always</span>:\n    - <span class="key">debug</span>: msg="Completed"</div>`,lab:`<div class="objective">Write a playbook using conditionals, loops, register, and block/rescue/always — then trigger failures to test error handling.</div><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">controller</span></div><div class="term-body"><span class="cmd">docker exec</span> <span class="flag">-it</span> ansible-controller <span class="cmd">bash</span>\n<span class="cmd">cd</span> /workspace\n\n<span class="cmd">cat</span> > advanced.yml << 'EOF'\n---\n- name: Advanced Techniques\n  hosts: webservers\n  become: yes\n  vars:\n    packages: [curl, wget, vim, tree]\n  tasks:\n    - name: Install via loop\n      apt:\n        name: "{{ item }}"\n        state: present\n        update_cache: yes\n      loop: "{{ packages }}"\n\n    - name: Check if app exists\n      stat: path=/opt/myapp/app.py\n      register: app\n\n    - name: Report\n      debug:\n        msg: "{{ 'INSTALLED' if app.stat.exists else 'NOT INSTALLED' }}"\n\n    - name: Create dir if missing\n      file: path=/opt/myapp state=directory\n      when: not app.stat.exists\n\n    - block:\n        - name: Start fake service\n          command: systemctl start myapp\n      rescue:\n        - name: Log failure\n          copy:\n            content: "myapp failed at {{ ansible_date_time.iso8601 }}\\n"\n            dest: /tmp/service_failure.log\n        - debug: msg="RESCUE triggered"\n      always:\n        - debug: msg="ALWAYS runs"\nEOF\n\n<span class="cmd">ansible-playbook</span> <span class="flag">-i</span> inventory.ini advanced.yml</div></div><div class="expected-output">Packages install. App check shows NOT INSTALLED. Block fails, rescue creates log, always runs. Playbook completes despite failure.</div>`,verify:`<ol><li><code>docker exec managed-node1 cat /tmp/service_failure.log</code></li><li>Run twice — packages show ok (idempotent)?</li></ol>`,challenge:`<h4>Challenge: Health Check Playbook</h4><p>Create health_check.yml: check disk (df -h), check memory (free -m), fail if disk >80%, generate report at /tmp/health_report.txt.</p>`,warn:`<ul><li><strong>ignore_errors hides problems</strong> — always follow up with a check</li><li><strong>Block/rescue without alerting</strong> — nobody knows it failed in prod</li></ul>`},{id:"d7",day:"Day 7",title:"Ansible Vault & Secrets",sub:"Securely manage passwords and sensitive configuration",teach:`<h4>The Problem</h4><p>Passwords, API keys, and certificates must NEVER be in plain text in Git. This is a compliance violation and security incident.</p><h4>Ansible Vault</h4><p>Encrypts data using AES-256. Encrypted files can be safely committed to Git — only someone with the vault password can read them.</p><div class="analogy">Vault is like a safe deposit box inside your repo. The data is there, committed to Git, but locked. Only the key (vault password) opens it.</div><h4>Best Practices</h4><ul><li>Store vault password in a file, add to .gitignore</li><li>Name encrypted files obviously: vault_secrets.yml</li><li>Use <code>no_log: true</code> on tasks handling secrets</li></ul>`,show:`<div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">vault-commands.sh</span></div><div class="term-body"><span class="cmd">ansible-vault create</span> secrets.yml\n<span class="cmd">ansible-vault encrypt</span> existing.yml\n<span class="cmd">ansible-vault view</span> secrets.yml\n<span class="cmd">ansible-vault edit</span> secrets.yml\n<span class="cmd">ansible-vault encrypt_string</span> <span class="str">'Secret123'</span> <span class="flag">--name</span> <span class="str">'db_pass'</span>\n<span class="cmd">ansible-playbook</span> site.yml <span class="flag">--vault-password-file</span> .vault_pass</div></div>`,lab:`<div class="objective">Create encrypted secrets, use them in a playbook, and deploy securely.</div><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">controller</span></div><div class="term-body"><span class="cmd">docker exec</span> <span class="flag">-it</span> ansible-controller <span class="cmd">bash</span>\n<span class="cmd">cd</span> /workspace\n\n<span class="comment"># Create vault password file</span>\n<span class="cmd">echo</span> <span class="str">"VaultP@ss2024"</span> > .vault_pass && <span class="cmd">chmod</span> 600 .vault_pass\n\n<span class="comment"># Create and encrypt secrets</span>\n<span class="cmd">cat</span> > plain_secrets.yml << 'EOF'\n---\ndb_password: "Pr0d_S3cret_2024"\napi_key: "sk-abc123def456"\nEOF\n\n<span class="cmd">ansible-vault encrypt</span> plain_secrets.yml <span class="flag">--vault-password-file</span> .vault_pass <span class="flag">--output</span> vault_secrets.yml\n<span class="cmd">rm</span> plain_secrets.yml  <span class="comment"># DELETE plain text!</span>\n\n<span class="comment"># Verify encryption</span>\n<span class="cmd">cat</span> vault_secrets.yml  <span class="comment"># shows encrypted text</span>\n<span class="cmd">ansible-vault view</span> vault_secrets.yml <span class="flag">--vault-password-file</span> .vault_pass\n\n<span class="comment"># Use in playbook</span>\n<span class="cmd">cat</span> > deploy_secrets.yml << 'EOF'\n---\n- name: Deploy with Secrets\n  hosts: webservers\n  become: yes\n  vars_files:\n    - vault_secrets.yml\n  tasks:\n    - name: Create config\n      copy:\n        content: "db_password={{ db_password }}\\napi_key={{ api_key }}\\n"\n        dest: /opt/myapp/config.yml\n        mode: '0600'\n      no_log: true\n    - name: Verify config exists\n      stat: path=/opt/myapp/config.yml\n      register: cfg\n    - debug: msg="Config deployed, {{ cfg.stat.size }} bytes"\nEOF\n\n<span class="cmd">ansible-playbook</span> <span class="flag">-i</span> inventory.ini deploy_secrets.yml <span class="flag">--vault-password-file</span> .vault_pass</div></div><div class="expected-output">Config deployed with decrypted secrets. File has 0600 permissions.</div>`,verify:`<ol><li><code>cat vault_secrets.yml</code> shows encrypted text?</li><li>Config on nodes has correct decrypted values?</li><li><code>no_log: true</code> prevents secrets in Ansible output?</li></ol>`,challenge:`<h4>Challenge: encrypt_string</h4><p>Encrypt just the db_password inline using <code>ansible-vault encrypt_string</code>. Create a vars file with mixed plain + encrypted variables.</p>`,warn:`<ul><li><strong>NEVER commit .vault_pass</strong> — add to .gitignore</li><li><strong>NEVER debug-print secrets</strong> — they appear in CI/CD logs</li><li><strong>no_log: true</strong> on every task handling secrets</li></ul>`}]},{phase:"Phase 3 — CI/CD Integration",n:3,lessons:[{id:"d8",day:"Day 8",title:"GitLab CI/CD Pipeline Fundamentals",sub:"Build, test, and deploy using .gitlab-ci.yml",teach:`<h4>CI/CD = Assembly Line</h4><div class="analogy">Raw materials (code) enter one end, pass through quality checks (lint, test), and emerge as deployed software only if every check passes.</div><h4>.gitlab-ci.yml Structure</h4><ul><li><strong>Stages</strong> — ordered phases (lint → test → deploy)</li><li><strong>Jobs</strong> — individual tasks within stages</li><li><strong>Rules</strong> — when jobs trigger</li><li><strong>Variables</strong> — environment config</li><li><strong>Artifacts</strong> — files passed between stages</li></ul>`,show:`<div class="yaml-display"><span class="comment"># .gitlab-ci.yml</span>\n<span class="key">stages</span>: [lint, validate, deploy-dev, deploy-prod]\n\n<span class="key">yaml-lint</span>:\n  <span class="key">stage</span>: lint\n  <span class="key">script</span>:\n    - yamllint playbooks/ roles/\n    - ansible-lint playbooks/*.yml\n\n<span class="key">ansible-check</span>:\n  <span class="key">stage</span>: validate\n  <span class="key">script</span>:\n    - ansible-playbook playbooks/deploy_app.yml --check\n\n<span class="key">deploy-dev</span>:\n  <span class="key">stage</span>: deploy-dev\n  <span class="key">script</span>:\n    - ansible-playbook -i inventories/dev/hosts playbooks/deploy_app.yml\n  <span class="key">rules</span>:\n    - <span class="key">if</span>: <span class="val">'$CI_COMMIT_BRANCH == "main"'</span>\n\n<span class="key">deploy-prod</span>:\n  <span class="key">stage</span>: deploy-prod\n  <span class="key">script</span>:\n    - ansible-playbook -i inventories/prod/hosts playbooks/deploy_app.yml\n  <span class="key">rules</span>:\n    - <span class="key">if</span>: <span class="val">'$CI_COMMIT_BRANCH == "main"'</span>\n      <span class="key">when</span>: <span class="val">manual</span></div>`,lab:`<div class="objective">Simulate a CI/CD pipeline locally with a bash script, then break it intentionally.</div><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">controller</span></div><div class="term-body"><span class="cmd">docker exec</span> <span class="flag">-it</span> ansible-controller <span class="cmd">bash</span>\n<span class="cmd">cd</span> /workspace && <span class="cmd">pip install</span> yamllint 2>/dev/null\n\n<span class="cmd">cat</span> > pipeline.sh << 'SCRIPT'\n#!/bin/bash\nset -e\nG='\\033[0;32m' R='\\033[0;31m' Y='\\033[1;33m' N='\\033[0m'\necho -e "${Y}=== PIPELINE START ===${N}"\n\necho -e "\\n${Y}[1/3] LINT${N}"\nif yamllint first_playbook.yml 2>/dev/null; then echo -e "${G}✓ Lint passed${N}";\nelse echo -e "${R}✗ Lint FAILED${N}"; exit 1; fi\n\necho -e "\\n${Y}[2/3] VALIDATE${N}"\nif ansible-playbook -i inventory.ini first_playbook.yml --check 2>/dev/null; then echo -e "${G}✓ Check passed${N}";\nelse echo -e "${R}✗ Check FAILED${N}"; exit 1; fi\n\necho -e "\\n${Y}[3/3] DEPLOY${N}"\nif ansible-playbook -i inventory.ini first_playbook.yml; then echo -e "${G}✓ Deploy succeeded${N}";\nelse echo -e "${R}✗ Deploy FAILED${N}"; exit 1; fi\n\necho -e "\\n${G}=== ALL STAGES PASSED ===${N}"\nSCRIPT\n<span class="cmd">chmod +x</span> pipeline.sh && <span class="cmd">bash</span> pipeline.sh\n\n<span class="comment"># Now BREAK IT</span>\n<span class="cmd">echo</span> <span class="str">"  bad: indent"</span> >> first_playbook.yml\n<span class="cmd">bash</span> pipeline.sh  <span class="comment"># fails at lint!</span>\n\n<span class="comment"># Fix and re-run</span>\n<span class="cmd">head -n -1</span> first_playbook.yml > t.yml && mv t.yml first_playbook.yml\n<span class="cmd">bash</span> pipeline.sh</div></div><div class="expected-output">First run passes all 3 stages. After breaking: fails at lint. After fix: passes again.</div>`,verify:`<ol><li>Pipeline passes all 3 stages?</li><li>Broken YAML stops at lint (not deploy)?</li></ol>`,challenge:`<h4>Challenge</h4><p>Add a 4th stage: generate a deployment report (hosts, timestamp, status) saved to /tmp/report.txt.</p>`,warn:`<ul><li><strong>Pipeline green ≠ deployment works</strong> — lint checks syntax, not logic</li><li><strong>Never auto-deploy to prod</strong> — use manual gates</li></ul>`},{id:"d9",day:"Day 9",title:"AWX Integration & Pipeline Debugging",sub:"Connect GitLab to Ansible Controller and debug failures",teach:`<h4>AWX / Ansible Automation Platform</h4><p>Provides a web UI and API for running Ansible at scale. Instead of CLI, you define <strong>Job Templates</strong> triggered via API.</p><div class="analogy">AWX is a flight control tower. Playbooks are flight plans, inventories are routes, AWX coordinates everything without a pilot in every cockpit.</div><h4>Common Pipeline Failures</h4><ul><li>YAML syntax errors</li><li>Missing dependencies in runner image</li><li>Permission denied (SSH key, vault password)</li><li>Branch rules mismatch</li><li>"No hosts matched" (silent success!)</li></ul>`,show:`<div class="yaml-display"><span class="comment"># Triggering AWX from CI/CD</span>\n<span class="key">deploy-via-awx</span>:\n  <span class="key">stage</span>: deploy\n  <span class="key">script</span>:\n    - |\n      curl -X POST \\\n        -H "Authorization: Bearer $AWX_TOKEN" \\\n        -d '{"extra_vars": {"env": "dev"}}' \\\n        "https://awx.company.com/api/v2/job_templates/42/launch/"</div><h4>Debug Commands</h4><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">debug</span></div><div class="term-body"><span class="cmd">python3</span> -c "import yaml; yaml.safe_load(open('.gitlab-ci.yml'))"\n<span class="cmd">ansible-playbook</span> pb.yml <span class="flag">--check --diff -v</span>\n<span class="cmd">ansible-playbook</span> pb.yml <span class="flag">-vvv</span>  <span class="comment"># max debug</span>\n<span class="cmd">ansible</span> webservers <span class="flag">-i</span> inv <span class="flag">--list-hosts</span></div></div>`,lab:`<div class="objective">Diagnose and fix 3 intentionally broken playbooks.</div><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">controller</span></div><div class="term-body"><span class="cmd">docker exec</span> <span class="flag">-it</span> ansible-controller <span class="cmd">bash</span>\n<span class="cmd">cd</span> /workspace\n\n<span class="comment"># Broken 1: YAML indentation</span>\n<span class="cmd">cat</span> > broken1.yml << 'EOF'\n---\n- name: Broken\n  hosts: webservers\n  tasks:\n    - name: Install\n      apt:\n      name: curl\n        state: present\nEOF\n<span class="cmd">ansible-playbook</span> <span class="flag">-i</span> inventory.ini broken1.yml\n<span class="comment"># FIX: align name: and state: under apt:</span>\n\n<span class="comment"># Broken 2: Wrong host group</span>\n<span class="cmd">cat</span> > broken2.yml << 'EOF'\n---\n- name: Deploy\n  hosts: dbservers\n  tasks:\n    - ping:\nEOF\n<span class="cmd">ansible-playbook</span> <span class="flag">-i</span> inventory.ini broken2.yml\n<span class="comment"># FIX: change hosts to webservers</span>\n\n<span class="comment"># Broken 3: Undefined variable</span>\n<span class="cmd">cat</span> > broken3.yml << 'EOF'\n---\n- name: Template\n  hosts: webservers\n  tasks:\n    - copy:\n        content: "Server: {{ server_fqdn }}"\n        dest: /tmp/app.conf\nEOF\n<span class="cmd">ansible-playbook</span> <span class="flag">-i</span> inventory.ini broken3.yml\n<span class="comment"># FIX: add vars section or use | default('value')</span></div></div>`,verify:`<ol><li>All 3 broken playbooks identified and fixed?</li><li>Can you explain each error from output alone?</li></ol>`,challenge:`<h4>Challenge</h4><p>Create a playbook with 2 bugs — one syntax, one logic. See if you can find both using only the error output.</p>`,warn:`<ul><li><strong>-vvv exposes secrets</strong> — never use in prod CI/CD</li><li><strong>"No hosts matched" exits 0</strong> — silent success is dangerous</li></ul>`}]},{phase:"Phase 4 — Real Workflows",n:4,lessons:[{id:"d10",day:"Day 10",title:"Enterprise Branching & Safe Deployments",sub:"Production deployment with canary patterns and rollback",teach:`<h4>The Golden Rule</h4><p>In enterprise, <code>main</code> = production. Every commit can affect live servers.</p><h4>Branch Types</h4><ul><li><code>feature/*</code> — new automation</li><li><code>bugfix/*</code> — fixing issues</li><li><code>hotfix/*</code> — emergency production fixes</li></ul><h4>Safe Deployment Principles</h4><ul><li><strong>Canary deploy</strong> — 1 server first, verify, then all</li><li><strong>Serial execution</strong> — <code>serial: 1</code> deploys one-at-a-time</li><li><strong>Rollback plan</strong> — every deployment must have one</li><li><strong>Health checks</strong> — verify after every deploy</li></ul><div class="analogy">Deploying to production is like surgery. Pre-op checklist, anesthesiologist on standby (rollback), smallest incision first (canary).</div>`,show:`<div class="yaml-display"><span class="comment"># Canary deployment pattern</span>\n- <span class="key">name</span>: Canary (1 server)\n  <span class="key">hosts</span>: <span class="val">webservers[0]</span>\n  <span class="key">roles</span>: [webserver]\n\n- <span class="key">name</span>: Verify canary\n  <span class="key">hosts</span>: <span class="val">webservers[0]</span>\n  <span class="key">tasks</span>:\n    - <span class="key">uri</span>: url=http://{{ ansible_host }}/health status_code=200\n      <span class="key">retries</span>: <span class="val">5</span>\n      <span class="key">delay</span>: <span class="val">10</span>\n\n- <span class="key">name</span>: Full rollout\n  <span class="key">hosts</span>: <span class="val">webservers</span>\n  <span class="key">serial</span>: <span class="val">1</span>  <span class="comment"># one at a time</span>\n  <span class="key">roles</span>: [webserver]</div>`,lab:`<div class="objective">Simulate canary deployment, health check, and rollback.</div><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">controller</span></div><div class="term-body"><span class="cmd">docker exec</span> <span class="flag">-it</span> ansible-controller <span class="cmd">bash</span>\n<span class="cmd">cd</span> /workspace\n\n<span class="cmd">cat</span> > canary.yml << 'EOF'\n---\n- name: "CANARY: First node"\n  hosts: webservers[0]\n  become: yes\n  tasks:\n    - copy:\n        content: "VERSION=2.0.0\\nDEPLOYED={{ ansible_date_time.iso8601 }}\\n"\n        dest: /opt/app_version.txt\n    - command: cat /opt/app_version.txt\n      register: h\n    - debug: msg="CANARY OK — {{ h.stdout }}"\n\n- name: "FULL ROLLOUT"\n  hosts: webservers\n  become: yes\n  serial: 1\n  tasks:\n    - copy:\n        content: "VERSION=2.0.0\\nDEPLOYED={{ ansible_date_time.iso8601 }}\\n"\n        dest: /opt/app_version.txt\n    - command: cat /opt/app_version.txt\n      register: v\n      changed_when: false\n    - debug: msg="{{ ansible_hostname }}: {{ v.stdout_lines }}"\nEOF\n\n<span class="cmd">ansible-playbook</span> <span class="flag">-i</span> inventory.ini canary.yml</div></div><div class="expected-output">First play targets node1 only. Second play deploys to all nodes one at a time.</div>`,verify:`<ol><li>Node1 deploys first (canary)?</li><li>Both nodes show v2.0.0?</li></ol>`,challenge:`<h4>Challenge: Rollback</h4><p>Create rollback.yml that reverts to v1.0.0. Then create deploy_safe.yml using block/rescue that auto-rolls-back on failure.</p>`,warn:`<ul><li><strong>serial: 1 is slow but safe</strong> — bad deployment only hits 1 server</li><li><strong>Health checks must be real</strong> — check HTTP endpoints, not just files</li></ul>`},{id:"d11",day:"Day 11",title:"Code Review & Capstone",sub:"Review Ansible like a senior engineer + Phase 4 assessment",teach:`<h4>Review Checklist</h4><ul><li><strong>Idempotency</strong> — running twice breaks nothing?</li><li><strong>Security</strong> — secrets encrypted? No hardcoded passwords?</li><li><strong>Error handling</strong> — what if a task fails mid-playbook?</li><li><strong>Modules</strong> — using shell where proper module exists?</li><li><strong>Permissions</strong> — correct file ownership/mode?</li></ul>`,show:`<div class="yaml-display"><span class="comment"># ❌ BAD</span>\n- shell: apt-get install -y nginx\n- shell: echo "pass=Secret" > /etc/app.conf\n- shell: chmod 777 /etc/app.conf\n\n<span class="comment"># ✅ GOOD</span>\n- <span class="key">apt</span>: name=nginx state=present\n- <span class="key">template</span>: src=app.conf.j2 dest=/etc/app.conf mode='0600'\n  <span class="key">no_log</span>: true</div>`,lab:`<div class="objective">Review a broken playbook (find all issues), then complete the Phase 4 capstone independently.</div><h4>Part 1: Code Review</h4><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">review exercise</span></div><div class="term-body"><span class="comment"># Find ALL issues in this playbook:</span>\n---\n- name: setup server\n  hosts: all\n  tasks:\n    - shell: apt-get update && apt-get install -y nginx\n    - shell: echo "admin_pass=P@ssw0rd" > /etc/myapp/config\n    - shell: chmod 777 /etc/myapp/config\n    - name: restart\n      shell: systemctl restart nginx\n    - file: path=/var/log/myapp state=directory</div></div><p><strong>Issues to find:</strong> shell vs modules, hardcoded password, chmod 777, missing names, hosts:all too broad, no become:yes, no error handling.</p><h4>Part 2: Capstone</h4><div class="objective">Complete independently — create a logrotate role, test it, run through pipeline, merge to main.</div><ol><li>Start Docker lab</li><li>Branch: <code>feature/add-logrotate</code></li><li>Create role with template, defaults, handler</li><li>Test with --check then deploy</li><li>Run pipeline simulator</li><li>Merge to main</li></ol>`,verify:`<ol><li>Found all 7+ issues in the review?</li><li>Capstone: role works, pipeline passes, merged?</li></ol>`,challenge:`<h4>Bonus</h4><p>Add Vault encryption + canary deployment to the capstone.</p>`,warn:`<ul><li><strong>chmod 777</strong> is NEVER acceptable in production</li><li><strong>"It works" isn't enough</strong> — reviews catch long-term issues</li></ul>`}]},{phase:"Phase 5 — Advanced & Incidents",n:5,lessons:[{id:"d12",day:"Day 12",title:"Enterprise-Grade Reusable Roles",sub:"Build roles that work across teams and environments",teach:`<h4>What Makes a Role Reusable?</h4><ul><li><strong>Parameterized</strong> — everything via variables</li><li><strong>Multi-OS</strong> — Debian + RHEL support</li><li><strong>Documented</strong> — README with examples</li><li><strong>Tested</strong> — works in dev/stage/prod</li><li><strong>Minimal dependencies</strong></li></ul>`,show:`<div class="yaml-display"><span class="comment"># Comprehensive defaults</span>\n<span class="key">app_name</span>: <span class="val">"myapp"</span>\n<span class="key">app_user</span>: <span class="val">"deploy"</span>\n<span class="key">app_port</span>: <span class="val">8080</span>\n<span class="key">app_home</span>: <span class="val">"/opt/{{ app_name }}"</span>\n\n<span class="comment"># meta/main.yml — dependencies</span>\n<span class="key">dependencies</span>:\n  - <span class="key">role</span>: common\n  - <span class="key">role</span>: firewall\n    <span class="key">vars</span>:\n      <span class="key">allowed_ports</span>: [80, 443]</div>`,lab:`<div class="objective">Build a production-grade role with comprehensive defaults, multi-OS support, and proper dependencies.</div><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">controller</span></div><div class="term-body"><span class="cmd">docker exec</span> <span class="flag">-it</span> ansible-controller <span class="cmd">bash</span>\n<span class="cmd">cd</span> /workspace\n\n<span class="cmd">mkdir -p</span> roles/app_deploy/{defaults,tasks,templates,handlers}\n\n<span class="cmd">cat</span> > roles/app_deploy/defaults/main.yml << 'EOF'\n---\napp_name: "myapp"\napp_user: "deploy"\napp_port: 8080\napp_home: "/opt/{{ app_name }}"\napp_log_dir: "/var/log/{{ app_name }}"\nEOF\n\n<span class="cmd">cat</span> > roles/app_deploy/tasks/main.yml << 'EOF'\n---\n- name: Create app directories\n  file:\n    path: "{{ item }}"\n    state: directory\n    mode: '0755'\n  loop:\n    - "{{ app_home }}"\n    - "{{ app_log_dir }}"\n    - "{{ app_home }}/config"\n- name: Deploy config\n  template:\n    src: app.conf.j2\n    dest: "{{ app_home }}/config/app.conf"\n    mode: '0640'\n  notify: restart app\n- name: Deploy version marker\n  copy:\n    content: "{{ app_name }} v{{ app_version | default('latest') }}\\n"\n    dest: "{{ app_home }}/VERSION"\nEOF\n\n<span class="cmd">cat</span> > roles/app_deploy/templates/app.conf.j2 << 'EOF'\n# {{ app_name }} — DO NOT EDIT MANUALLY\nport={{ app_port }}\nlog_dir={{ app_log_dir }}\nEOF\n\n<span class="cmd">cat</span> > roles/app_deploy/handlers/main.yml << 'EOF'\n---\n- name: restart app\n  debug: msg="HANDLER: Would restart {{ app_name }}"\nEOF\n\n<span class="cmd">cat</span> > test_role.yml << 'EOF'\n---\n- hosts: webservers\n  become: yes\n  roles:\n    - role: app_deploy\n      vars: { app_name: "payment-svc", app_port: 9090, app_version: "3.2.1" }\nEOF\n\n<span class="cmd">ansible-playbook</span> <span class="flag">-i</span> inventory.ini test_role.yml</div></div><div class="expected-output">Directories created, config rendered with custom variables, version marker deployed.</div>`,verify:`<ol><li>Works with defaults AND custom overrides?</li><li>Running twice = all ok (idempotent)?</li></ol>`,challenge:`<h4>Challenge: Multi-OS</h4><p>Add tasks that install packages via apt on Debian, yum on RedHat, using <code>when: ansible_os_family</code>.</p>`,warn:`<ul><li><strong>Too many dependencies</strong> create fragile chains</li><li><strong>"DO NOT EDIT MANUALLY"</strong> in templates prevents drift</li></ul>`},{id:"d13",day:"Day 13",title:"🚨 Incident Simulation: Production Down",sub:"Diagnose real failures under pressure",teach:`<h4>Incident Response: Assess → Contain → Fix → Review</h4><p>Never guess. Gather data first. Today you'll face 3 simulated production incidents.</p>`,show:`<h4>Response Framework</h4><ol><li><strong>Detect</strong> — what's the symptom?</li><li><strong>Assess</strong> — severity? blast radius?</li><li><strong>Contain</strong> — stop the bleeding</li><li><strong>Diagnose</strong> — root cause</li><li><strong>Fix</strong> — apply correction</li><li><strong>Verify</strong> — confirm fix</li><li><strong>Review</strong> — prevent recurrence</li></ol>`,lab:`<div class="objective">Diagnose 3 incidents. Try to solve each BEFORE reading the answer.</div><h4>🔥 Incident 1: Deploy Succeeded But App Down</h4><p><strong>Symptom:</strong> Pipeline green. Ansible completed. App returns 502.</p><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">clues</span></div><div class="term-body"><span class="out">TASK [webserver: Deploy config] changed</span>\n<span class="out">TASK [webserver: Ensure running] ok</span>\n<span class="err">nginx: [emerg] unknown directive "proxy_pas" in default:12</span>\n<span class="err">Active: failed (Result: exit-code)</span></div></div><details><summary>Reveal Root Cause</summary><div><p><strong>Typo:</strong> <code>proxy_pas</code> instead of <code>proxy_pass</code>. Ansible deployed config (changed), checked if running (it was — from old config). Handler restarted nginx, which failed. <strong>Fix:</strong> Add <code>validate: nginx -t</code> to template task.</p></div></details><h4>🔥 Incident 2: Wrong Inventory</h4><p><strong>Symptom:</strong> 3 production servers rebooted unexpectedly during "dev patching."</p><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">clues</span></div><div class="term-body"><span class="comment"># ansible.cfg had:</span>\n<span class="out">[defaults]</span>\n<span class="out">inventory = inventories/prod/hosts</span>\n<span class="comment"># Developer forgot -i flag!</span></div></div><details><summary>Reveal Root Cause</summary><div><p>Default inventory pointed to <strong>prod</strong>. Fix: set default to dev, use AWX RBAC, add confirmation prompts for prod.</p></div></details><h4>🔥 Incident 3: Secrets in Git History</h4><p><strong>Symptom:</strong> Security team found database password in commit history.</p><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">clues</span></div><div class="term-body"><span class="cmd">git log</span> <span class="flag">--all -p -S</span> <span class="str">"db_password"</span>\n<span class="out">+db_password: "Sup3r_S3cret!"</span>\n<span class="comment"># Was "deleted" later but still in history!</span></div></div><details><summary>Reveal Root Cause</summary><div><p>Git never forgets. Fix: 1) Rotate password immediately 2) Use git-filter-repo to purge history 3) Prevention: pre-commit hooks (gitleaks), mandatory Vault.</p></div></details>`,verify:`<ol><li>Did you try solving each BEFORE reading answers?</li><li>Can you write prevention strategies for each?</li></ol>`,challenge:`<h4>Challenge</h4><p>Design your own incident scenario with symptoms, clues, and hidden root cause.</p>`,warn:`<ul><li><strong>Incidents happen to everyone</strong> — speed of diagnosis separates junior from senior</li><li><strong>Never cover up incidents</strong> — blameless post-mortems improve the team</li></ul>`},{id:"d14",day:"Day 14",title:"🏆 Final Capstone Assessment",sub:"Prove production readiness with an unguided exercise",teach:`<h4>Final Assessment</h4><p>No guidance. No hints. This simulates your first independent production task.</p>`,show:`<h4>Scenario</h4><p>Build and deploy <strong>server hardening</strong> automation end-to-end.</p>`,lab:`<div class="objective">Complete independently. This is your production-readiness certification.</div><h4>Requirements:</h4><ol><li>Set up Docker lab (controller + 2 nodes)</li><li>Branch: <code>feature/server-hardening</code></li><li>Build <code>hardening</code> role:<ul><li>Disable root SSH (template sshd_config.j2)</li><li>Set file permissions on sensitive files</li><li>Create audit log</li><li>Configurable defaults + handler for sshd restart</li></ul></li><li>Encrypt secrets with Ansible Vault</li><li>Canary deployment pattern</li><li>Pipeline: lint → validate → canary → full deploy</li><li>Rollback playbook</li><li>Merge to main with proper commits</li><li>README documentation</li></ol><h4>Scoring (100 pts)</h4><ul><li>Correctness — 25 pts</li><li>Idempotency — 20 pts</li><li>Security — 20 pts</li><li>Safety (canary + rollback) — 15 pts</li><li>Documentation — 10 pts</li><li>Best practices — 10 pts</li></ul><p><strong>80+ pts = Production-Ready Certification 🏆</strong></p>`,verify:`<ol><li>All tasks work on both nodes?</li><li>Vault-encrypted secrets?</li><li>Canary pattern implemented?</li><li>Rollback playbook works?</li><li>Clean git log with branch → merge?</li></ol>`,challenge:`<h4>Extra Credit</h4><ul><li>Add Molecule tests</li><li>Simulate Slack notification on deploy</li><li>Chain multiple roles in a workflow</li></ul>`,warn:`<ul><li><strong>This is what real work looks like</strong></li><li><strong>Time benchmark:</strong> Senior: 45 min. Mid-level: 90 min. Beginner: 2-3 hours.</li></ul>`}]}];
 
-document.querySelectorAll('.phase-card, .fw-step, .level-node, .stack-item, .rule-card, .badge-item, .incident-box').forEach(el => {
-  el.style.opacity = '0';
-  el.style.transform = 'translateY(20px)';
-  el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-  observer.observe(el);
-});
+function buildSidebar(){const s=document.getElementById('sidebar');let h='<a href="#" onclick="showPage(\'home\')" class="sidebar-lesson active" style="padding:.65rem 1.25rem;font-weight:600;color:var(--accent)">🏠 Home</a>';h+='<a href="#" onclick="showPage(\'docker-setup\')" class="sidebar-lesson" style="padding:.65rem 1.25rem;font-weight:600;color:var(--accent3)">🐳 Docker Setup</a>';C.forEach((p,i)=>{h+=`<div><div class="sidebar-phase-title${i===0?' expanded':''}" onclick="this.classList.toggle('expanded');this.nextElementSibling.classList.toggle('open')"><span>${p.phase}</span><span class="arrow">▶</span></div><div class="sidebar-lessons${i===0?' open':''}">`;p.lessons.forEach(l=>{h+=`<a href="#" onclick="showPage('${l.id}')" class="sidebar-lesson" id="sb-${l.id}"><span class="dot"></span>${l.day}: ${l.title.length>26?l.title.substring(0,26)+'…':l.title}</a>`});h+='</div></div>'});s.innerHTML=h}
 
-// Mobile nav toggle
-const style = document.createElement('style');
-style.textContent = '.nav-links.show{display:flex!important;position:absolute;top:100%;left:0;right:0;flex-direction:column;background:rgba(10,14,23,0.95);padding:1rem 2rem;border-bottom:1px solid var(--border);gap:1rem}';
-document.head.appendChild(style);
+function buildPages(){const m=document.getElementById('mainContent');let h='';
+h+=`<div class="lesson-page active" id="page-home"><section class="hero"><div class="hero-badge"><span class="dot"></span> Internal DevOps Training System</div><h1>DevOps <span class="gr">Academy</span></h1><p>A structured, hands-on training system with Docker-based labs. 14 days from beginner to production-ready.</p><div class="hero-cta"><a href="#" onclick="showPage('docker-setup')" class="btn btn-primary">🐳 Docker Setup →</a><a href="#" onclick="showPage('d1')" class="btn btn-outline">Start Day 1</a></div><div class="overview-grid"><div class="overview-card"><div class="oc-icon">📖</div><h4>5 Phases</h4><p>Git → Ansible → CI/CD → Workflows → Incidents</p></div><div class="overview-card"><div class="oc-icon">🐳</div><h4>Docker Labs</h4><p>Every lesson has hands-on Docker exercises</p></div><div class="overview-card"><div class="oc-icon">🚨</div><h4>Incident Sims</h4><p>Real failure scenarios for production instincts</p></div><div class="overview-card"><div class="oc-icon">🏆</div><h4>Certification</h4><p>Capstone proves production readiness</p></div></div></section></div>`;
+h+=`<div class="lesson-page" id="page-docker-setup"><div class="lesson-header"><span class="lesson-phase-tag">PREREQUISITE</span><h1 class="lesson-title">🐳 Docker Lab Environment Setup</h1><p class="lesson-subtitle">Install Docker and Docker Compose to run all labs</p></div><div class="block-wrap lab-block"><div class="block-header expanded" onclick="toggleBlock(this)">🛠️ Installation<span class="chevron">▶</span></div><div class="block-body open"><div class="block-content"><h4>macOS</h4><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">terminal</span></div><div class="term-body"><span class="cmd">brew install</span> <span class="flag">--cask</span> docker\n<span class="cmd">docker</span> <span class="flag">--version</span>\n<span class="cmd">docker-compose</span> <span class="flag">--version</span></div></div><h4>Linux (Ubuntu/Debian)</h4><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">terminal</span></div><div class="term-body"><span class="cmd">sudo apt-get update</span>\n<span class="cmd">sudo apt-get install</span> <span class="flag">-y</span> docker.io docker-compose\n<span class="cmd">sudo usermod</span> <span class="flag">-aG</span> docker $USER\n<span class="cmd">docker run</span> hello-world</div></div><h4>Windows</h4><p>Install <a href="https://docker.com/products/docker-desktop/" target="_blank" style="color:var(--accent)">Docker Desktop</a> with WSL 2 backend.</p><h4>Verify</h4><div class="terminal"><div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">test</span></div><div class="term-body"><span class="cmd">docker run</span> <span class="flag">--rm</span> alpine echo <span class="str">"Docker works!"</span>\n<span class="cmd">docker run</span> <span class="flag">-it --rm</span> alpine sh -c <span class="str">"echo Inside && hostname"</span></div></div><div class="expected-output">Both commands complete without errors.</div></div></div></div></div>`;
+
+const all=C.flatMap(p=>p.lessons);const icons={teach:'📖 Teach',show:'👁️ Show',lab:'🛠️ Docker Lab',verify:'✅ Verify',challenge:'🧩 Challenge',warn:'⚠️ Warnings'};const cls={teach:'teach-block',show:'show-block',lab:'lab-block',verify:'verify-block',challenge:'challenge-block',warn:'warn-block'};
+all.forEach((l,i)=>{const p=C.find(ph=>ph.lessons.includes(l));let pg=`<div class="lesson-page" id="page-${l.id}"><div class="lesson-header"><span class="lesson-phase-tag">${p.phase} · ${l.day}</span><h1 class="lesson-title">${l.title}</h1><p class="lesson-subtitle">${l.sub}</p></div>`;
+['teach','show','lab','verify','challenge','warn'].forEach(s=>{if(l[s]){const exp=s==='teach'||s==='show'||s==='lab';pg+=`<div class="block-wrap ${cls[s]}"><div class="block-header${exp?' expanded':''}" onclick="toggleBlock(this)">${icons[s]}<span class="chevron">▶</span></div><div class="block-body${exp?' open':''}"><div class="block-content">${l[s]}</div></div></div>`}});
+const prev=i>0?all[i-1]:null,next=i<all.length-1?all[i+1]:null;
+pg+=`<div class="lesson-nav">${prev?`<a href="#" onclick="showPage('${prev.id}')" class="lesson-nav-btn">← ${prev.day}</a>`:'<span></span>'}${next?`<a href="#" onclick="showPage('${next.id}')" class="lesson-nav-btn">${next.day} →</a>`:'<span></span>'}</div></div>`;h+=pg});
+h+='<footer>DevOps Academy — Built by <a href="https://github.com/abhishekshuklacodes">abhishekshuklacodes</a> · Git · Ansible · CI/CD · IaC</footer>';
+m.innerHTML=h}
+
+function showPage(id){document.querySelectorAll('.lesson-page').forEach(p=>p.classList.remove('active'));const pg=document.getElementById('page-'+id);if(pg)pg.classList.add('active');document.querySelectorAll('.sidebar-lesson').forEach(l=>l.classList.remove('active'));const sb=document.getElementById('sb-'+id);if(sb)sb.classList.add('active');document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('show');window.scrollTo(0,0)}
+function toggleBlock(h){h.classList.toggle('expanded');h.nextElementSibling.classList.toggle('open')}
+document.getElementById('menuBtn').addEventListener('click',()=>{document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show')});
+document.getElementById('sidebarOverlay').addEventListener('click',()=>{document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('show')});
+buildSidebar();buildPages();
 </script>
 </body>
 </html>
